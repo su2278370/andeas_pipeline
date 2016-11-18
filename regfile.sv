@@ -35,12 +35,12 @@ module regfile(clk,
         end
     end else begin
         
-        if(enable)begin
-          if(write)begin
+        if(enable==`PcEnable)begin
+          if(write==`RegWrite)begin
             
             rw_reg[waddr1] <= din;
             
-          end else if(read)begin
+          end else if(read==`RegRead)begin
             
             dout1 <= rw_reg[raddr1];
             dout2 <= rw_reg[raddr2];

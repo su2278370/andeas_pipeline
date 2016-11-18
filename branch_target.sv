@@ -2,14 +2,15 @@
 `include "port_define.sv"
 
 module branch_target(clk,rst,
-                    alu_control,
-                    instruction,
+                    alu_ctrl,
+                    inst,
                     pc,
                     branch_addr);
    
-   input clk,rst;
-   input [3:0] alu_control;
-   input [23:0] instruction;
+   input clk;
+   input rst;
+   input [3:0] alu_ctrl;
+   input [23:0] inst;
    input [`RegBus] pc;
    
    output logic [`RegBus] branch_addr;
@@ -21,13 +22,13 @@ module branch_target(clk,rst,
    
    
    always_comb begin
-       thirdteenSE = instruction[13:0]>>1'b1;
-       fifteenSE = instruction[15:0]>>1'b1;
-       twentythreeSE = instruction[23:0]>>1'b1;
+       thirdteenSE = inst[13:0]>>1'b1;
+       fifteenSE = inst[15:0]>>1'b1;
+       twentythreeSE = inst[23:0]>>1'b1;
     
-       pc_bq  = pc + {{19{instruction[13]}},thirdteenSE[12:0]};
-       pc_bqz = pc +{{17{instruction[15]}},fifteenSE[14:0]};
-       pc_jp  = pc + {{9{instruction[23]}} ,twentythreeSE[22:0]};
+       pc_bq  = pc + {{19{inst[13]}},thirdteenSE[12:0]};
+       pc_bqz = pc +{{17{inst[15]}},fifteenSE[14:0]};
+       pc_jp  = pc + {{9{inst[23]}} ,twentythreeSE[22:0]};
    end
    
    
@@ -39,7 +40,7 @@ module branch_target(clk,rst,
         end
         else begin
 
-            case(alu_control)
+            case(alu_ctrl)
                 `AluCtrlBeq:begin
                   
                   branch_addr <= pc_bq;

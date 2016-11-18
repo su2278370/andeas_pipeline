@@ -13,9 +13,9 @@ module pc(rst,
   input  rst; 
   input  pc_enable;
   input  branch_true;
-  input  [`RegSize]new_addr;
+  input  [`InstAddrBus]new_addr;
   
-  output logic [`RegSize] pc_output;
+  output logic [`InstAddrBus] pc_output;
   
   
   always_ff@(posedge clk, posedge rst)begin
