@@ -16,9 +16,9 @@ module regfile(clk,
   input clk;
   input rst; 
   input write; 
-  input read;
-  input enable;
-  input [`RegAddrBus] raddr1, raddr2, waddr1;
+  input read1, read2;
+  input [`RegAddrBus] waddr1;
+  input [`RegAddrBus] raddr1, raddr2;
   input [`RegBus] din;
   
   output logic [`RegBus] dout1, dout2, dout3;
@@ -35,20 +35,19 @@ module regfile(clk,
         end
     end else begin
         
-        if(enable==`PcEnable)begin
-          if(write==`RegWrite)begin
+        if(write==`RegWrite)begin
             
             rw_reg[waddr1] <= din;
             
-          end else if(read==`RegRead)begin
+        end else if(read==`RegRead)begin
             
             dout1 <= rw_reg[raddr1];
             dout2 <= rw_reg[raddr2];
             dout3 <= rw_reg[waddr1];
             
-          end
         end
     end
+    
   end
   
 endmodule

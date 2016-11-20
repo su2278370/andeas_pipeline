@@ -19,7 +19,7 @@
 `define TwentySE  2'b11
 
 //Branch Extension
-`define ZeroWord 0
+`define ZeroWord 32'b0
 `define Thirdteen 12:0
 `define Fifteen 14:0
 `define TwentyThree 22:0
@@ -28,11 +28,30 @@
 `define RstEnable  1'b1
 `define PcEnable   1'b1
 `define BranchTrue 1'b1
-`define RegWrite   1'b1
-`define RegRead    1'b1
+`define ReadEnable   1'b1
+`define ReadDisable  1'b0
+`define WriteEnable  1'b1
+`define WriteDisable 1'b0
+
+`define ImmSrc 1'b1
+`define RegSrc 1'b0
+`define LwMemSrc 1'b1
+`define LwAluSrc 1'b0
+
 
 //Alu control
 `define AluCtrl 3:0
+`define AluCtrlAdd  4'b0000
+`define AluCtrlSub  4'b0001
+`define AluCtrlAnd  4'b0010
+`define AluCtrlOr   4'b0011
+`define AluCtrlXor  4'b0100
+`define AluCtrlSrli  4'b0101
+`define AluCtrlSlli  4'b0110
+`define AluCtrlRotri  4'b0111
+`define AluCtrlNop   4'b1000
+`define AluCtrlLwSw  4'b1001
+`define AluCtrlLwiSwi  4'b1010
 `define AluCtrlBeq  4'b1011
 `define AluCtrlBne  4'b1100
 `define AluCtrlBeqz 4'b1101
@@ -40,7 +59,7 @@
 `define AluCtrlJump 4'b1111
 
 //Sub Opcode
-`define NOP 5'b01001
+`define NOP_SRLI 5'b01001
 `define ADD 5'b00000
 `define SUB 5'b00001
 `define AND 5'b00010
