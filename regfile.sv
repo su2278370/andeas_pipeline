@@ -3,7 +3,7 @@
 
 module regfile(clk,
                rst,
-               dout1, dout2, dout3,
+               dout1, dout2, 
                write, 
                read, 
                enable,
@@ -21,7 +21,7 @@ module regfile(clk,
   input [`RegAddrBus] raddr1, raddr2;
   input [`RegBus] din;
   
-  output logic [`RegBus] dout1, dout2, dout3;
+  output logic [`RegBus] dout1, dout2;
   
   logic [`RegBus] rw_reg [`RegAddrBus];
   
@@ -39,14 +39,37 @@ module regfile(clk,
             
             rw_reg[waddr1] <= din;
             
-        end else if(read==`RegRead)begin
+        end else if(read1==`RegRead && read2=`RegRead)begin
             
             dout1 <= rw_reg[raddr1];
             dout2 <= rw_reg[raddr2];
-            dout3 <= rw_reg[waddr1];
             
         end
     end
+    
+  end
+  
+  always_comb begin
+    
+    if(rst==`RstEnable)begin
+        dout1 = `ZeroWord;
+    end else if(read1==`RegRead) begin
+        dout1 = rw_reg[raddr1];
+    end else
+		dout1 = `ZeroWord
+	end
+    
+  end
+  
+  always_comb begin
+    
+    if(rst==`RstEnable)begin
+        dout2 = `ZeroWord;
+    end else if(read2==`RegRead) begin
+        dout2 = rw_reg[raddr2];
+    end else
+		dout2 = `ZeroWord;
+	end
     
   end
   

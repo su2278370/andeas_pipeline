@@ -25,30 +25,33 @@ module decoder(clk,
    input [`InstAddrBus] pc_i;
    input [`InstBus] 	inst_i;
    
+   //Regfile to decoder
    input [`RegBus] 	reg1_data_i;
    input [`RegBus] 	reg2_data_i;
-   //input [`RegBus] 	reg3_data_i;
-   
+
+   //Decoder to interface
    output [`InstAddrBus] pc_o;
    output [`InstAddrBus] branch_addr;
    
+   //Decoder to regfile
+   output logic reg1_read;
+   output logic reg2_read;
+   output logic reg_write;
    output logic [`RegAddrBus] reg1_addr_o;
    output logic [`RegAddrBus] reg2_addr_o;
    output logic [`RegAddrBus] write_addr_o;
+   
+   //Decoder to interface
    output logic [`RegBus]     reg1_o;
    output logic [`RegBus]     reg2_o;
    output logic [`RegBus]     write_o;
    
+   //Control Signals, decoder to interface
    output logic [`AluCtrl]    alu_ctrl;
    output logic 	      lwsrc;
    output logic 	      aluSrc2;
    //output logic 	      src_din;
-   //output logic [`Extension]  extension;
-   
-   output logic reg1_read;
-   output logic reg2_read;
-   output logic reg_write;
-      
+   //output logic [`Extension]  extension;   
    output logic DM_read; 
    output logic DM_write; 
    
