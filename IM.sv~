@@ -3,6 +3,7 @@
 module IM(clk, 
 	  rst,
           IM_read, 
+          IM_write, 
           IM_addr, 
           IM_out,
  );

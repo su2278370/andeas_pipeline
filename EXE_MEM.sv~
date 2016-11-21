@@ -20,13 +20,19 @@ module exe_mem(clk,
   input           exe_DM_write;
   input [`RegBus] exe_alu_result;
 
-  output logic [`RegBus] mem_sw_o;
-  output logic [`RegBus] mem_write_o;
+  
+  
   output logic  	  mem_lwsrc;
+  
+  //Interface to mux
   output logic           mem_movsrc;
+  output logic [`RegBus] mem_write_o;
+  
+  //Interface to Date Memory  
+  output logic [`RegBus] mem_sw_o;
   output logic           mem_DM_read; 
   output logic           mem_DM_write;
-  output logic [`RegBus] mem_alu_result;
+  output logic [`RegBus] mem_alu_result; //Interface to mux
 
   //Alu to Pc
   //input logic	exe_overflow	          
@@ -47,10 +53,10 @@ module exe_mem(clk,
       mem_sw_o <= exe_sw_o;
       mem_write_o <= exe_write_o;
       mem_lwsrc <= exe_lwsrc;
-      mem_movsrc <= ;
-      mem_DM_read <= ; 
-      mem_DM_write <= ;
-      mem_alu_result <= ;
+      mem_movsrc <= exe_movsrc;
+      mem_DM_read <= exe_DM_read; 
+      mem_DM_write <= exe_DM_write;
+      mem_alu_result <= exe_alu_result;
       
     end
   end     

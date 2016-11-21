@@ -1,12 +1,10 @@
 `timescale 1ns/10ps
 
-module mux2to1(Y,S,I0,I1);
-    
-    parameter DSize = 32;
+module mux_alu_mem(Y,S,I0,I1);
     
     input S; 
-    input [DSize-1:0] I0, I1;
-    output logic [DSize-1:0] Y;
+    input [`RegBus] I0, I1;
+    output logic [`RegBus] Y;
     
     always_comb begin 
         case(S)
