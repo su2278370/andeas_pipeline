@@ -2,7 +2,7 @@
 `include "port_define.sv"
 
 
-module id_exe(clk,
+module if_exe(clk,
               rst,
               id_pc_o,
               id_branch_addr,

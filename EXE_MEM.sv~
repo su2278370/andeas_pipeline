@@ -3,10 +3,26 @@
 
 module exe_mem(clk,
                rst,
-               if_pc,
-               if_inst,
-               id_pc,
-               id_inst
+               exe_sw_o,
+  	       exe_write_o,
+  exe_lwsrc,
+  exe_movsrc,
+  exe_DM_read, 
+  exe_DM_write,
+  exe_alu_result,
+
+  mem_lwsrc,
+  
+  
+  mem_movsrc,
+  mem_write_o,
+  
+  
+  mem_sw_o,
+  mem_DM_read, 
+  mem_DM_write,
+  mem_alu_result, 
+
 );
   
   input clk;
@@ -21,7 +37,7 @@ module exe_mem(clk,
   input [`RegBus] exe_alu_result;
 
   
-  
+  //Interface to Interface
   output logic  	  mem_lwsrc;
   
   //Interface to mux
