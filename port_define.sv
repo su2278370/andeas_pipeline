@@ -37,6 +37,8 @@
 `define RegSrc 1'b0
 `define LwMemSrc 1'b1
 `define LwAluSrc 1'b0
+`define MvRegSrc 1'b1
+`define MvAluSrc 1'b0
 
 
 //Alu control

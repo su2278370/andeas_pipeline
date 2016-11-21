@@ -1,33 +1,27 @@
 `timescale 1ns/10ps
 
-module ALU(overflow, alu_result, src1, src2, src3, op, enable, sv, branch_true);
-
-parameter DSize = 32;
-parameter OSize = 3;
+module ALU(overflow, alu_result, src1, src2, aluctrl, enable, branch_true);
 
 input enable;
-input [DSize-1:0] src1 , src2 , src3;
-input [OSize:0] op;
-input [1:0] sv;
+input [`RegBus] src1 , src2;
+input [`AluCtrl] aluctrl;
+input [`InstAddrBus] alu_pc_o;
+input [`InstAddrBus] alu_branch_addr;
 
-output logic [DSize-1:0] alu_result;
+output logic [`RegBus] alu_result;
 output logic overflow;
 output logic branch_true;
+output logic [`InstAddrBus] new_addr;
 
-//logic [2*DSize-1:0] temp;
 logic [DSize-1:0] temp;
-//logic [DSize-1:0] temp1;
-
-//assign temp1  = src%2;
-//assign temp   = {src1 , src1}>>(src2 % 32);
 
 always_comb begin
   
   temp  = {src1 , src1}>>(src2 % 32);       
 
-  if(enable)begin
-      case(op)
-          4'b0000 :begin //ADD
+
+      case(aluctrl)
+          `AluCtrlAdd :begin //ADD
             alu_result = src1 + src2;
             branch_true = 1'b0;
             //???
@@ -36,7 +30,7 @@ always_comb begin
             else
               overflow = 1'b0;
           end
-          4'b0001 :begin //SUB
+          `AluCtrlSub :begin //SUB
             alu_result = src1 - src2;
             branch_true = 1'b0;
             if((alu_result[31] == 1'b1 && src1[31] == 1'b0 && src2[31] == 1'b1) || (alu_result[31] == 1'b0 && src1[31] == 1'b1 && src2[31] == 1'b0))
@@ -44,82 +38,87 @@ always_comb begin
             else
               overflow = 1'b0;
           end
-          4'b0010 :begin //AND
+          `AluCtrlAnd :begin //AND
             alu_result = src1 & src2;
             branch_true = 1'b0;
             overflow = 1'b0;
           end
-          4'b0011 :begin //OR
+          `AluCtrlOr :begin //OR
 
             alu_result = src1 | src2;
             branch_true = 1'b0;
             overflow = 1'b0;
           end
-          4'b0100 :begin //XOR
+          `AluCtrlXor :begin //XOR
             alu_result = src1 ^ src2;
             branch_true = 1'b0;
             overflow = 1'b0;
           end
-          4'b0101 :begin //shift right
+          `AluCtrlSrli :begin //shift right
             alu_result = src1 >> src2[4:0];
             branch_true = 1'b0;
             overflow = 1'b0;
           end
-          4'b0110 :begin //shift left
+          `AluCtrlSlli :begin //shift left
             alu_result = src1 << src2[4:0];
             branch_true = 1'b0;
             overflow = 1'b0;
           end
-          4'b0111 :begin //rotate
+          `AluCtrlRotri :begin //rotate
             alu_result = temp[31:0];
             branch_true = 1'b0;
             overflow = 1'b0;
           end
-          4'b1001 :begin //Load & store address
-             alu_result = src1 + (src2 << sv);
+          `AluCtrlLwSw :begin //Load & store address
+             alu_result = src1 + src2;
              branch_true = 1'b0;
              overflow = 1'b0;
   
           end
-          4'b1010 :begin //Load & store immediate address
-            alu_result = src1 + (src2 << 2);
+          `AluCtrlLwiSwi :begin //Load & store immediate address
+            alu_result = src1 + src2;
             branch_true = 1'b0;
             overflow = 1'b0;
             
           end
-          4'b1011 :begin //Branch equal
-            if(src1==src3)
+          `AluCtrlBeq :begin //Branch equal
+            new_addr = alu_pc_o + alu_branch_addr;
+            if(src1==src2)
               branch_true = 1'b1;
             else
               branch_true = 1'b0;
             alu_result = 1'b0;
             overflow = 1'b0;
           end
-          4'b1100 :begin //Branch if not equal
-            if(src1!=src3)
+          `AluCtrlBne :begin //Branch if not equal
+            new_addr = alu_pc_o + alu_branch_addr;
+            if(src1!=src2)
               branch_true = 1'b1;
             else
               branch_true = 1'b0;
             alu_result = 1'b0;
             overflow = 1'b0;
           end
-          4'b1101 :begin //Branch if zero
-            if(src3==0)
+          `AluCtrlBeqz :begin //Branch if zero
+            new_addr = alu_pc_o + alu_branch_addr;
+            if(src1==0)
               branch_true = 1'b1;
             else
               branch_true = 1'b0;
             alu_result = 1'b0;
             overflow = 1'b0;
           end
-          4'b1110 :begin //Branch if not zero
-            if(src3!=0)
+          `AluCtrlBnez :begin //Branch if not zero
+            new_addr = alu_pc_o + alu_branch_addr;
+            if(src1!=0)
               branch_true = 1'b1;
             else
               branch_true = 1'b0;
             alu_result = 1'b0;
             overflow = 1'b0;
           end
-          4'b1111:begin //Jump
+          `AluCtrlJump :begin //Jump
+            new_addr = alu_pc_o + alu_branch_addr;
             branch_true = 1'b1;
             alu_result = 1'b0;
             overflow = 1'b0;
@@ -130,12 +129,7 @@ always_comb begin
             overflow = 1'b0;
           end
       endcase
-  end
-  else begin
-    alu_result = 1'b0;
-    branch_true = 1'b0;
-    overflow = 1'b0;
-  end
+  
 end
 
 endmodule
