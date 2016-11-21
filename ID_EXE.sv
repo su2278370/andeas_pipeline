@@ -72,7 +72,7 @@ module if_exe(clk,
 			exe_sw_o   <= `ZeroWord;
 			exe_write_o <= `ZeroWord;
 			exe_aluctrl <= `AluCtrlNop;
-			exe_lwsrc <= 1'b0;
+			exe_lwsrc <= `LwAluSrc;
 			exe_aluSrc2 <= `RegSrc;
 			exe_movsrc  <= `MvAluSrc;
 			exe_DM_read  <= `ReadDisable; 
