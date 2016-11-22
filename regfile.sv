@@ -27,7 +27,7 @@ module regfile(clk,
   
   output logic [`RegBus] dout1, dout2, swdout;
   
-  logic [`RegBus] rw_reg [`RegAddrBus];
+  logic [`RegBus] rw_reg [`RegNum-1:0];
   
   integer i;
   
@@ -39,16 +39,10 @@ module regfile(clk,
         end
     end else begin
         
-        if(write==`RegWrite)begin
+        if(write==`WriteEnable)
             
             rw_reg[waddr1] <= din;
             
-        end else if(read1==`RegRead && read2=`RegRead)begin
-            
-            dout1 <= rw_reg[raddr1];
-            dout2 <= rw_reg[raddr2];
-            
-        end
     end
     
   end
@@ -57,10 +51,11 @@ module regfile(clk,
     
     if(rst==`RstEnable)begin
         swdout = `ZeroWord;
-    end else if(swread==`RegRead) begin
+    end else if(swread==`ReadEnable) begin
         swdout = rw_reg[swaddr];
-    end else
-		    swdout = `ZeroWord
+    end else 
+		    swdout = `ZeroWord;
+	
 		  
 	end
   
@@ -68,12 +63,12 @@ module regfile(clk,
     
     if(rst==`RstEnable)begin
         dout1 = `ZeroWord;
-    end else if(read1==`RegRead) begin
+    end else if(read1==`ReadEnable) begin
         dout1 = rw_reg[raddr1];
     end else
-		dout1 = `ZeroWord
+		dout1 = `ZeroWord;
 	
-	end
+	
     
   end
   
@@ -81,7 +76,7 @@ module regfile(clk,
     
     if(rst==`RstEnable)begin
         dout2 = `ZeroWord;
-    end else if(read2==`RegRead) begin
+    end else if(read2==`ReadEnable) begin
         dout2 = rw_reg[raddr2];
     end else
 		dout2 = `ZeroWord;

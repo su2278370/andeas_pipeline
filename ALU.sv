@@ -1,11 +1,15 @@
 `timescale 1ns/10ps
+`include "port_define.sv"
 
 module alu(overflow, 
 	alu_result, 
 	src1, 
 	src2, 
-	aluctrl, 
-	branch_true);
+	aluctrl,
+	alu_pc_o,
+	alu_branch_addr, 
+	branch_true,
+	new_addr);
 
 input [`RegBus] src1 , src2;
 input [`AluCtrl] aluctrl;
@@ -17,7 +21,7 @@ output logic overflow;
 output logic branch_true;
 output logic [`InstAddrBus] new_addr;
 
-logic [DSize-1:0] temp;
+logic [`RegBus] temp;
 
 always_comb begin
   

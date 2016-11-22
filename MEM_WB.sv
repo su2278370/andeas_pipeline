@@ -4,9 +4,13 @@
 module mem_wb(clk,
               rst,
   	      mem_lwsrc,
+  	      mem_write_addr_o,
+  	      mem_reg_write,
 	      mem_movsrc_result,
    	      mem_DM_out,
 	      wb_lwsrc,
+	      wb_write_addr_o,
+	      wb_reg_write,
 	      wb_movsrc_result,
 	      wb_DM_out
 );
@@ -16,6 +20,8 @@ module mem_wb(clk,
   
   //From Interface
   input mem_lwsrc;
+  input [`InstAddrBus] mem_write_addr_o;
+  input mem_reg_write;
   
   //From Mux
   input [`RegBus] mem_movsrc_result;
@@ -26,6 +32,8 @@ module mem_wb(clk,
 
   //From Interface
   output logic wb_lwsrc;
+  output logic [`InstAddrBus] wb_write_addr_o;
+  output logic wb_reg_write;
   
   //From Mux
   output logic [`RegBus] wb_movsrc_result;
@@ -38,14 +46,18 @@ module mem_wb(clk,
   always@(posedge clk, posedge rst)begin
     if(rst==`RstEnable)begin
     
-    	wb_lwsrc = `LwAluSrc;
-  	wb_movsrc_result = `ZeroWord;
-  	wb_DM_out = `ZeroWord; 
+    	wb_lwsrc <= `LwAluSrc;
+    	wb_write_addr_o <= `ZeroWord;
+    	wb_reg_write <= `WriteDisable;
+  	wb_movsrc_result <= `ZeroWord;
+  	wb_DM_out <= `ZeroWord; 
 
     end else begin
-        wb_lwsrc = mem_lwsrc;
-  	wb_movsrc_result = mem_movsrc_result;
-  	wb_DM_out = mem_DM_out; 
+        wb_lwsrc <= mem_lwsrc;
+        wb_write_addr_o <= mem_write_addr_o;
+       	wb_reg_write <= mem_reg_write;
+  	wb_movsrc_result <= mem_movsrc_result;
+  	wb_DM_out <= mem_DM_out; 
       
     end
   end     

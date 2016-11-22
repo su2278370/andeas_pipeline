@@ -1,4 +1,5 @@
 `timescale 1ns/10ps
+`include "port_define.sv"
 
 module IM(clk, 
 	  rst,
@@ -12,9 +13,9 @@ module IM(clk,
   input IM_read; 
   input [`ImAddr]IM_addr;
   
-  output logic [data_size-1:0]IM_out;
+  output logic [`RegBus]IM_out;
   
-  logic [`RegBus]mem_data[`ImSize];
+  logic [`RegBus]mem_data[`ImSize-1:0];
   
   integer i;
   

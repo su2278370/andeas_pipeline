@@ -3,13 +3,11 @@
 
 module decoder(clk,
                rst,
-               pc_i,
                inst_i,
                reg1_data_i,
                reg2_data_i,
                sw_data_i,
-	       pc_o,
-	       branch_addr,
+	             branch_addr,
                reg1_addr_o,
                reg2_addr_o,
                sw_addr_o,
@@ -32,7 +30,6 @@ module decoder(clk,
 
    input clk;
    input rst;
-   input [`InstAddrBus] pc_i;
    input [`InstBus] 	inst_i;
    
    //Regfile to decoder
@@ -41,7 +38,6 @@ module decoder(clk,
    input [`RegBus]  sw_data_i;
 
    //Decoder to interface
-   output logic [`InstAddrBus] pc_o;
    output logic [`InstAddrBus] branch_addr;
    
    //Decoder to regfile
@@ -77,14 +73,14 @@ module decoder(clk,
    logic 	      aluSrc2;
    
    logic [`RegBus] 	imm;
-   logic [`ThirdTeen]   thirdteenSE;
+   logic [`Thirdteen]   thirdteenSE;
    logic [`Fifteen]     fifteenSE;
-   logic [`TwentyThree] twentythreeSE;
+   logic [`Twentythree] twentythreeSE;
    
    always_comb begin
-       thirdteenSE = inst[13:0]>>1'b1;
-       fifteenSE = inst[15:0]>>1'b1;
-       twentythreeSE = inst[23:0]>>1'b1;
+       thirdteenSE = inst_i[13:0]>>1'b1;
+       fifteenSE = inst_i[15:0]>>1'b1;
+       twentythreeSE = inst_i[23:0]>>1'b1;
    end
    
    
@@ -103,17 +99,24 @@ module decoder(clk,
 		if(aluSrc2==`ImmSrc)begin
 			reg1_o = reg1_data_i;
 			reg2_o = imm;
-			sw_o   = `ZeroWord;
+			
+			if(DM_write==`WriteEnable)begin
+			  sw_o   = sw_data_i;
+			end
+			else begin
+			  sw_o   = `ZeroWord;
+			end
 		end
 		else if(aluSrc2==`RegSrc)begin
 			reg1_o = reg1_data_i;
 			reg2_o = reg2_data_i;
 			sw_o   = `ZeroWord;
-		end
-		else if(DM_write==`WriteEnable)begin
-		  reg1_o = reg1_data_i;
-			reg2_o = reg2_data_i;
-			sw_o   = sw_data_i;
+			if(DM_write==`WriteEnable)begin
+			  sw_o   = sw_data_i;
+			end
+			else begin
+			  sw_o   = `ZeroWord;
+			end
 		end
 		/*else if begin
 			write_o = mov;
@@ -124,18 +127,19 @@ module decoder(clk,
    always_comb begin
       unique case(opcode)
         6'b100000:begin
-           reg1_addr_o  = inst[19:15];
-		   reg2_addr_o  = inst[14:10];
-		   write_addr_o = inst[24:20];
-		   reg_write   = `WriteEnable;
+           reg1_addr_o  = inst_i[19:15];
+		   reg2_addr_o  = inst_i[14:10];
+		   write_addr_o = inst_i[24:20];
+		   
            DM_read      = `ReadDisable; 
            DM_write     = `WriteDisable; 
            case(sub_opcode_5)
              `NOP_SRLI:begin
 		
                 if(inst_i[14:10]==5'b00000)begin //NOP
+                   reg_write   = `WriteDisable;
                    alu_ctrl = `AluCtrlNop;
-                   lwsrc = `LwAluSrc
+                   lwsrc = `LwAluSrc;
                    aluSrc2 = `ImmSrc;
                    movsrc = `MvAluSrc;
             				   reg1_read    = `ReadEnable;
@@ -145,8 +149,9 @@ module decoder(clk,
 				   //src_din = 1'b0;
                 end
                 else begin //SRLI
+                  reg_write   = `WriteEnable;
                    alu_ctrl = `AluCtrlSrli;
-                   lwsrc = `LwAluSrc
+                   lwsrc = `LwAluSrc;
                    aluSrc2 = `ImmSrc;
                    movsrc = `MvAluSrc;
 				   reg1_read    = `ReadEnable;
@@ -157,8 +162,9 @@ module decoder(clk,
                 end  
              end
              `ADD:begin
+               reg_write   = `WriteEnable;
 				alu_ctrl = `AluCtrlAdd;
-                lwsrc = `LwAluSrc
+                lwsrc = `LwAluSrc;
 				aluSrc2 = `RegSrc;
 				movsrc = `MvAluSrc;
 				reg1_read    = `ReadEnable;
@@ -169,8 +175,9 @@ module decoder(clk,
                 
              end
              `SUB:begin
+               reg_write   = `WriteEnable;
 				alu_ctrl = `AluCtrlSub;
-                lwsrc = `LwAluSrc
+                lwsrc = `LwAluSrc;
                 aluSrc2 = `RegSrc;
                 movsrc = `MvAluSrc;
 				reg1_read    = `ReadEnable;
@@ -180,8 +187,9 @@ module decoder(clk,
                 
              end
              `AND:begin
+               reg_write   = `WriteEnable;
 				alu_ctrl = `AluCtrlAnd;
-                lwsrc = `LwAluSrc
+                lwsrc = `LwAluSrc;
 				aluSrc2 = `RegSrc;
 				movsrc = `MvAluSrc;
 				reg1_read    = `ReadEnable;
@@ -192,8 +200,9 @@ module decoder(clk,
                 
              end
              `OR:begin
+               reg_write   = `WriteEnable;
 				alu_ctrl = `AluCtrlOr;
-                lwsrc = `LwAluSrc
+                lwsrc = `LwAluSrc;
 				aluSrc2 = `RegSrc;
 				movsrc = `MvAluSrc;
 				reg1_read    = `ReadEnable;
@@ -204,8 +213,9 @@ module decoder(clk,
                 
              end
              `XOR:begin
+               reg_write   = `WriteEnable;
 				alu_ctrl = `AluCtrlXor;
-                lwsrc = `LwAluSrc
+                lwsrc = `LwAluSrc;
 				aluSrc2 = `RegSrc;
 				movsrc = `MvAluSrc;
 				reg1_read    = `ReadEnable;
@@ -216,20 +226,22 @@ module decoder(clk,
                 
              end
              `SLLI:begin
+               reg_write   = `WriteEnable;
                 alu_ctrl = `AluCtrlSlli;
-				lwsrc = `LwAluSrc
+				lwsrc = `LwAluSrc;
                 aluSrc2 = `ImmSrc;
                 movsrc = `MvAluSrc;
 				reg1_read    = `ReadEnable;
 				reg2_read    = `ReadDisable;
-                imm = {27{1'b0}},inst_i[14:10]};
+                imm = {{27{1'b0}},inst_i[14:10]};
                 //extension = `FiveZE;
 				//src_din = 1'b0;
                 
              end
              `ROTRI:begin
+               reg_write   = `WriteEnable;
 				alu_ctrl = `AluCtrlRotri;
-                lwsrc = `LwAluSrc
+                lwsrc = `LwAluSrc;
                 aluSrc2 = `ImmSrc;
                 movsrc = `MvAluSrc;
 				reg1_read    = `ReadEnable;
@@ -241,8 +253,9 @@ module decoder(clk,
                 
              end
              default:begin
+               reg_write   = `WriteDisable;
 				alu_ctrl = `AluCtrlNop;  
-                lwsrc = `LwAluSrc
+                lwsrc = `LwAluSrc;
 				aluSrc2 = `RegSrc;
 				movsrc = `MvAluSrc;
 				reg1_read    = `ReadDisable;
@@ -255,14 +268,14 @@ module decoder(clk,
            endcase
         end
 		`ADDI:begin
-		   reg1_addr_o  = inst[19:15];
-		   reg2_addr_o  = inst[14:10];
-		   write_addr_o = inst[24:20];
+		   reg1_addr_o  = inst_i[19:15];
+		   reg2_addr_o  = inst_i[14:10];
+		   write_addr_o = inst_i[24:20];
 		   reg_write   = `WriteEnable;
            DM_read      = `ReadDisable; 
            DM_write     = `WriteDisable; 
            alu_ctrl = `AluCtrlAdd;
-           lwsrc = `LwAluSrc
+           lwsrc = `LwAluSrc;
            aluSrc2 = `ImmSrc;
            movsrc = `MvAluSrc;
 		   reg1_read    = `ReadEnable;
@@ -273,14 +286,14 @@ module decoder(clk,
            
         end
         `ORI:begin
-		   reg1_addr_o  = inst[19:15];
-		   reg2_addr_o  = inst[14:10];
-		   write_addr_o = inst[24:20];
+		   reg1_addr_o  = inst_i[19:15];
+		   reg2_addr_o  = inst_i[14:10];
+		   write_addr_o = inst_i[24:20];
 		   reg_write   = `WriteEnable;
            DM_read      = `ReadDisable; 
            DM_write     = `WriteDisable; 
            alu_ctrl = `AluCtrlOr;
-           lwsrc = `LwAluSrc
+           lwsrc = `LwAluSrc;
            aluSrc2 = `ImmSrc;
            movsrc = `MvAluSrc;
 		   reg1_read    = `ReadEnable;
@@ -293,14 +306,14 @@ module decoder(clk,
            
         end
         `XORI:begin
-		   reg1_addr_o  = inst[19:15];
-		   reg2_addr_o  = inst[14:10];
-		   write_addr_o = inst[24:20];
+		   reg1_addr_o  = inst_i[19:15];
+		   reg2_addr_o  = inst_i[14:10];
+		   write_addr_o = inst_i[24:20];
 		   reg_write   = `WriteEnable;
            DM_read      = `ReadDisable; 
            DM_write     = `WriteDisable; 
            alu_ctrl = `AluCtrlXor;
-           lwsrc = `LwAluSrc
+           lwsrc = `LwAluSrc;
            aluSrc2 = `ImmSrc;
            movsrc = `MvAluSrc;
 		   reg1_read    = `ReadEnable;
@@ -313,14 +326,14 @@ module decoder(clk,
            
         end
         `MOVI:begin
-		   reg1_addr_o  = inst[19:15];
-		   reg2_addr_o  = inst[14:10];
-		   write_addr_o = inst[24:20];
+		   reg1_addr_o  = inst_i[19:15];
+		   reg2_addr_o  = inst_i[14:10];
+		   write_addr_o = inst_i[24:20];
 		   reg_write   = `WriteEnable;
            DM_read      = `ReadDisable; 
            DM_write     = `WriteDisable; 
            alu_ctrl = `AluCtrlNop;
-           lwsrc = `LwAluSrc
+           lwsrc = `LwAluSrc;
            aluSrc2 = `ImmSrc;
            movsrc = `MvRegSrc;
 		   reg1_read    = `ReadDisable;
@@ -334,14 +347,14 @@ module decoder(clk,
         6'b011100:begin
            case(sub_opcode_8)
              `LW:begin
-				reg1_addr_o  = inst[19:15];
-				reg2_addr_o  = inst[14:10];
-				write_addr_o = inst[24:20];
+				reg1_addr_o  = inst_i[19:15];
+				reg2_addr_o  = inst_i[14:10];
+				write_addr_o = inst_i[24:20];
 				reg_write   = `WriteEnable;
 				DM_read      = `ReadEnable; 
 				DM_write     = `WriteDisable; 
 				alu_ctrl = `AluCtrlLwSw;
-                lwsrc = `LwMemSrc
+                lwsrc = `LwMemSrc;
                 
                 aluSrc2 = `RegSrc;
                 movsrc = `MvAluSrc;
@@ -353,15 +366,15 @@ module decoder(clk,
                 
              end
              `SW:begin
-				reg1_addr_o  = inst[19:15];
-				reg2_addr_o  = inst[14:10];
-				sw_addr_o    = inst[24:20];
-				write_addr_o = inst[24:20];
+				reg1_addr_o  = inst_i[19:15];
+				reg2_addr_o  = inst_i[14:10];
+				sw_addr_o    = inst_i[24:20];
+				write_addr_o = inst_i[24:20];
 				reg_write    = `WriteDisable;
 				DM_read      = `ReadDisable; 
 				DM_write     = `WriteEnable; 
                 alu_ctrl = `AluCtrlLwSw;
-                lwsrc = `LwAluSrc
+                lwsrc = `LwAluSrc;
 				aluSrc2 = `RegSrc;
 				movsrc = `MvAluSrc;
 				reg1_read    = `ReadEnable;
@@ -375,7 +388,7 @@ module decoder(clk,
              end
              default:begin
 				alu_ctrl = `AluCtrlNop;  
-                lwsrc = `LwAluSrc
+                lwsrc = `LwAluSrc;
 				aluSrc2 = `RegSrc;  
 				movsrc = `MvAluSrc;
 				reg1_read    = `ReadDisable;
@@ -390,14 +403,14 @@ module decoder(clk,
         end
         
         `LWI:begin
-		   reg1_addr_o  = inst[19:15];
-		   reg2_addr_o  = inst[14:10];
-		   write_addr_o = inst[24:20];
+		   reg1_addr_o  = inst_i[19:15];
+		   reg2_addr_o  = inst_i[14:10];
+		   write_addr_o = inst_i[24:20];
 		   reg_write   = `WriteEnable;
            DM_read      = `ReadEnable; 
            DM_write     = `WriteDisable; 
            alu_ctrl = `AluCtrlLwiSwi;
-           lwsrc = `LwMemSrc
+           lwsrc = `LwMemSrc;
            aluSrc2 = `ImmSrc;
            movsrc = `MvAluSrc;
 		   reg1_read    = `ReadEnable;
@@ -409,15 +422,15 @@ module decoder(clk,
            
         end
         `SWI:begin
-		   reg1_addr_o  = inst[19:15];
-		   reg2_addr_o  = inst[14:10];
-		   sw_addr_o    = inst[24:20];
-		   write_addr_o = inst[24:20];
+		   reg1_addr_o  = inst_i[19:15];
+		   reg2_addr_o  = inst_i[14:10];
+		   sw_addr_o    = inst_i[24:20];
+		   write_addr_o = inst_i[24:20];
 		   reg_write    = `WriteDisable;
 	       DM_read      = `ReadDisable; 
 		   DM_write     = `WriteEnable; 
            alu_ctrl = `AluCtrlLwiSwi;
-           lwsrc = `LwAluSrc //don't care because of DM_write
+           lwsrc = `LwAluSrc; //don't care because of DM_write
            aluSrc2 = `ImmSrc;
            movsrc = `MvAluSrc;
 		   reg1_read    = `ReadEnable;
@@ -433,19 +446,19 @@ module decoder(clk,
         6'b100110:begin
            case(sub_opcode)
              `BEQ:begin
-				reg1_addr_o  = inst[24:20];
-				reg2_addr_o  = inst[19:15];
-				//write_addr_o = inst[24:20];
+				reg1_addr_o  = inst_i[24:20];
+				reg2_addr_o  = inst_i[19:15];
+				//write_addr_o = inst_i[24:20];
 				reg_write    = `WriteDisable;
 				DM_read      = `ReadDisable; 
 				DM_write     = `WriteDisable; 
 				alu_ctrl = `AluCtrlBeq;
-                lwsrc = `LwAluSrc
+                lwsrc = `LwAluSrc;
 				aluSrc2 = `RegSrc;  
 				movsrc = `MvAluSrc;
 				reg1_read    = `ReadEnable;
 				reg2_read    = `ReadEnable;
-				branch_addr = {{19{inst[13]}},thirdteenSE[12:0]};
+				branch_addr = {{19{inst_i[13]}},thirdteenSE[12:0]};
                 //extension = 2'b00;        
                 //src_din = 1'b0;
                      
@@ -453,19 +466,19 @@ module decoder(clk,
                 
              end
              `BNE:begin
-			    reg1_addr_o  = inst[24:20];
-				reg2_addr_o  = inst[19:15];
-				//write_addr_o = inst[24:20];
+			    reg1_addr_o  = inst_i[24:20];
+				reg2_addr_o  = inst_i[19:15];
+				//write_addr_o = inst_i[24:20];
 				reg_write    = `WriteDisable;
 				DM_read      = `ReadDisable; 
 				DM_write     = `WriteDisable; 
 				alu_ctrl = `AluCtrlBne;
-                lwsrc = `LwAluSrc
+                lwsrc = `LwAluSrc;
 				aluSrc2 = `RegSrc; 
 				movsrc = `MvAluSrc;    
 				reg1_read    = `ReadEnable;
 				reg2_read    = `ReadEnable;
-				branch_addr = {{19{inst[13]}},thirdteenSE[12:0]};				
+				branch_addr = {{19{inst_i[13]}},thirdteenSE[12:0]};				
                 //extension = 2'b00;        
                 //src_din = 1'b0;
                 
@@ -474,7 +487,7 @@ module decoder(clk,
              end
              default:begin
 				alu_ctrl = `AluCtrlNop;  
-                lwsrc = `LwAluSrc
+                lwsrc = `LwAluSrc;
 				aluSrc2 = `RegSrc;
 				movsrc = `MvAluSrc;   
 				reg1_read    = `ReadDisable;
@@ -490,19 +503,19 @@ module decoder(clk,
         6'b100111:begin
            case(sub_opcode_4)
              `BEQZ:begin
-			    reg1_addr_o  = inst[24:20];
-				//reg2_addr_o  = inst[14:10];
-				//write_addr_o = inst[24:20];
+			    reg1_addr_o  = inst_i[24:20];
+				//reg2_addr_o  = inst_i[14:10];
+				//write_addr_o = inst_i[24:20];
 				reg_write    = `WriteDisable;
 				DM_read      = `ReadDisable; 
 				DM_write     = `WriteDisable; 
 				alu_ctrl = `AluCtrlBeqz;
-                lwsrc = `LwAluSrc
+                lwsrc = `LwAluSrc;
 				aluSrc2 = `RegSrc;
 				movsrc = `MvAluSrc;   
 				reg1_read    = `ReadEnable;
 				reg2_read    = `ReadDisable;
-				branch_addr = {{17{inst[15]}},fifteenSE[14:0]};
+				branch_addr = {{17{inst_i[15]}},fifteenSE[14:0]};
                 //extension = 2'b00;        
                 //src_din = 1'b0;
                 
@@ -510,19 +523,19 @@ module decoder(clk,
                 
              end
              `BNEZ:begin
-				reg1_addr_o  = inst[24:20];
-				//reg2_addr_o  = inst[14:10];
-				//write_addr_o = inst[24:20];
+				reg1_addr_o  = inst_i[24:20];
+				//reg2_addr_o  = inst_i[14:10];
+				//write_addr_o = inst_i[24:20];
 				reg_write    = `WriteDisable;
 				DM_read      = `ReadDisable; 
 				DM_write     = `WriteDisable; 
 				alu_ctrl = `AluCtrlBnez;
-                lwsrc = `LwAluSrc
+                lwsrc = `LwAluSrc;
 				aluSrc2 = `RegSrc;
 				movsrc = `MvAluSrc;   
 				reg1_read    = `ReadEnable;
 				reg2_read    = `ReadDisable;
-				branch_addr = {{17{inst[15]}},fifteenSE[14:0]};
+				branch_addr = {{17{inst_i[15]}},fifteenSE[14:0]};
                 //extension = 2'b00;        
                 //src_din = 1'b0;
                 
@@ -531,7 +544,7 @@ module decoder(clk,
              end
              default:begin
 				alu_ctrl = `AluCtrlNop;  
-                lwsrc = `LwAluSrc
+                lwsrc = `LwAluSrc;
 				aluSrc2 = `RegSrc;
 				movsrc = `MvAluSrc;     
 				reg1_read    = `ReadDisable;
@@ -545,19 +558,19 @@ module decoder(clk,
         end
         
         `JUMP:begin
-		   //reg1_addr_o  = inst[19:15];
-	       //reg2_addr_o  = inst[14:10];
-		   //write_addr_o = inst[24:20];
+		   //reg1_addr_o  = inst_i[19:15];
+	       //reg2_addr_o  = inst_i[14:10];
+		   //write_addr_o = inst_i[24:20];
 		   reg_write    = `WriteDisable;
 		   DM_read      = `ReadDisable; 
 		   DM_write     = `WriteDisable; 
 		   alu_ctrl = `AluCtrlJump;
-           lwsrc = `LwAluSrc
+           lwsrc = `LwAluSrc;
 		   aluSrc2 = `ImmSrc;
 		   movsrc = `MvAluSrc;   
 		   reg1_read    = `ReadDisable;
 		   reg2_read    = `ReadDisable;	
-		   branch_addr = {{9{inst[23]}} ,twentythreeSE[22:0]};
+		   branch_addr = {{9{inst_i[23]}} ,twentythreeSE[22:0]};
            //extension = 2'b00;        
            //src_din = 1'b0;
            
@@ -567,14 +580,21 @@ module decoder(clk,
         
         default:begin
            alu_ctrl = `AluCtrlNop;  
-           lwsrc = `LwAluSrc
-		   aluSrc2 = `RegSrc; 
+           lwsrc = `LwAluSrc;
+		   aluSrc2 = `RegSrc;
+		   movsrc  = `MvAluSrc;
+		   DM_read  = `ReadDisable; 
+       DM_write = `WriteDisable;  
+            
 		   reg1_read    = `ReadDisable;
-		   reg2_read    = `ReadDisable;           
-           //extension = 2'b00;        
-           //src_din = 1'b0;
-           
-           
+		   reg2_read    = `ReadDisable;
+		   sw_read = `ReadDisable;
+       reg_write = `WriteDisable;
+       reg1_addr_o = `ZeroWord;
+       reg2_addr_o = `ZeroWord;
+       write_addr_o = `ZeroWord;
+       sw_addr_o = `ZeroWord;           
+  
         end
       endcase          
    end 

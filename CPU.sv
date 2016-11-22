@@ -1,6 +1,6 @@
 `timescale 1ns/10ps
 
-`include "IM.SV"
+`include "IM.sv"
 `include "pc.sv"
 `include "IF_ID.sv"
 `include "decoder.sv"
@@ -23,7 +23,7 @@ module CPU(clk,
 	input rst;
    
    	//-------Instruction memory----------//
-   	logic [DSize-1:0] IM_out;
+   	logic [`RegBus] IM_out;
 	
 	//--------program counter------------//
 	logic [`InstAddrBus] pc_output;
@@ -34,7 +34,6 @@ module CPU(clk,
 	
 	//--------Decoder-------------------//
 	
-	    logic [`InstAddrBus] pc_o;
 	    logic [`InstAddrBus] branch_addr;
 
 	    logic reg1_read;
@@ -66,10 +65,12 @@ module CPU(clk,
 	//------------Decoder to Execution---//
   	
 	 logic [`InstAddrBus] exe_pc_o;
+	 logic [`InstAddrBus] exe_write_addr_o;
 	 logic [`InstAddrBus] exe_branch_addr;
 	 logic [`RegBus] exe_reg1_o;
 	 logic [`RegBus] exe_reg2_o;
    	 logic [`AluCtrl]    exe_aluctrl;
+   	 
 	
 	
 	 logic [`RegBus] exe_sw_o;
@@ -77,6 +78,7 @@ module CPU(clk,
    	 logic 	      exe_lwsrc;
  
 	 logic        exe_movsrc;
+	 logic exe_reg_write;
 	 logic exe_DM_read; 
 	 logic exe_DM_write;
 
@@ -89,13 +91,14 @@ module CPU(clk,
 	//----------Execution to Memory-------//
    	 logic  	  mem_lwsrc;
   
-  
+    logic [`InstAddrBus] mem_write_addr_o;
   	 logic           mem_movsrc;
   	 logic [`RegBus] mem_write_o;
 
   
   
   	 logic [`RegBus] mem_sw_o;
+  	 logic          mem_reg_write;
  	 logic           mem_DM_read; 
   	 logic           mem_DM_write;
   	 logic [`RegBus] mem_alu_result; 
@@ -108,6 +111,8 @@ module CPU(clk,
 
 	//-----------Memory to Writeback-----//
 	 logic wb_lwsrc;
+	 logic wb_reg_write;
+	 logic [`InstAddrBus] wb_write_addr_o;
   	 logic [`RegBus] wb_movsrc_result;
   	 logic [`RegBus] wb_DM_out;
 
@@ -116,7 +121,7 @@ module CPU(clk,
    
  
   	   IM inst_memory(.clk(clk), 
-	  		.rst(rst),
+	  		       .rst(rst),
           		.IM_read(1'b1), 
           		.IM_addr(pc_output), 
           		.IM_out(IM_out));
@@ -136,12 +141,10 @@ module CPU(clk,
 				
 	   decoder decoder1(.clk(clk),
                .rst(rst),
-               .pc_i(id_pc),
                .inst_i(id_inst),
                .reg1_data_i(dout1),
                .reg2_data_i(dout2),
                .sw_data_i(swdout),
- 	       .pc_o(pc_o),
 	       .branch_addr(branch_addr),
                .reg1_addr_o(reg1_addr_o),
                .reg2_addr_o(reg2_addr_o),
@@ -166,11 +169,11 @@ module CPU(clk,
                .dout1(dout1), 
 	       .dout2(dout2), 
                .swdout(swdout),
-               .write(reg_write), 
+               .write(wb_reg_write), 
                .read1(reg1_read), 
                .read2(reg2_read),
                .swread(sw_read), 
-               .waddr1(write_addr_o),
+               .waddr1(wb_write_addr_o),
                .raddr1(reg1_addr_o),
                .raddr2(reg2_addr_o), 
                .swaddr(sw_addr_o),
@@ -178,8 +181,9 @@ module CPU(clk,
 	   
 	   id_exe decoder_to_execution(.clk(clk),
               .rst(rst),
-              .id_pc_o(pc_o),
+              .id_pc_o(id_pc),
               .id_branch_addr(branch_addr),
+              .id_write_addr_o(write_addr_o),
               .id_reg1_o(reg1_o),
               .id_reg2_o(reg2_o),
               .id_sw_o(sw_o),
@@ -187,18 +191,20 @@ module CPU(clk,
 			        .id_aluctrl(alu_ctrl),
               .id_lwsrc(lwsrc),
               .id_movsrc(movsrc),
+              .id_reg_write(reg_write),
               .id_DM_read(DM_read),
               .id_DM_write(DM_write),
               .exe_pc_o(exe_pc_o),
               .exe_branch_addr(exe_branch_addr),
+              .exe_write_addr_o(exe_write_addr_o),
               .exe_reg1_o(exe_reg1_o),
               .exe_reg2_o(exe_reg2_o),
               .exe_sw_o(exe_sw_o),
               .exe_write_o(exe_write_o),
 			        .exe_aluctrl(exe_aluctrl),
               .exe_lwsrc(exe_lwsrc),
-              .exe_aluSrc2(exe_aluSrc2),
               .exe_movsrc(exe_movsrc),
+              .exe_reg_write(exe_reg_write),
               .exe_DM_read(exe_DM_read),
               .exe_DM_write(exe_DM_write));
 
@@ -206,16 +212,21 @@ module CPU(clk,
 		.alu_result(alu_result), 
 		.src1(exe_reg1_o), 
 		.src2(exe_reg2_o), 
-		.aluctrl(exe_aluctrl),  
-		.branch_true(branch_true));
+		.aluctrl(exe_aluctrl),
+		.alu_pc_o(exe_pc_o),
+	  .alu_branch_addr(exe_branch_addr), 
+	  .branch_true(branch_true),
+	  .new_addr(new_addr));
 
 	   exe_mem execution_to_memory(
 		.clk(clk),
                .rst(rst),
                .exe_sw_o(exe_sw_o),
-  	       .exe_write_o(exe_write),
+  	       .exe_write_o(exe_write_o),
 		  .exe_lwsrc(exe_lwsrc),
 		  .exe_movsrc(exe_movsrc),
+		  .exe_write_addr_o(exe_write_addr_o),
+		  .exe_reg_write(exe_reg_write),
 		  .exe_DM_read(exe_DM_read), 
 		  .exe_DM_write(exe_DM_write),
 		  .exe_alu_result(alu_result),
@@ -228,6 +239,8 @@ module CPU(clk,
 		  
 		  
 		  .mem_sw_o(mem_sw_o),
+		  .mem_write_addr_o(mem_write_addr_o),
+		  .mem_reg_write(mem_reg_write),
 		  .mem_DM_read(mem_DM_read), 
 		  .mem_DM_write(mem_DM_write),
 		  .mem_alu_result(mem_alu_result) );
@@ -240,7 +253,7 @@ module CPU(clk,
 		  .DM_in(mem_sw_o), 
 		  .DM_out(DM_out));
 
-	   mux_movsrc(.Y(movsrc_result),
+	   mux_movsrc mux_movsrc1(.Y(movsrc_result),
 			.S(mem_movsrc),
 			.I0(mem_alu_result),
 			.I1(mem_write_o));
@@ -248,13 +261,17 @@ module CPU(clk,
 	  mem_wb memory_to_write(.clk(clk),
               .rst(rst),
   	      .mem_lwsrc(mem_lwsrc),
+  	      .mem_write_addr_o(mem_write_addr_o),
+  	      .mem_reg_write(mem_reg_write),
 	      .mem_movsrc_result(movsrc_result),
    	      .mem_DM_out(DM_out),
 	      .wb_lwsrc(wb_lwsrc),
+	      .wb_write_addr_o(wb_write_addr_o),
+	      .wb_reg_write(wb_reg_write),
 	      .wb_movsrc_result(wb_movsrc_result),
 	      .wb_DM_out(wb_DM_out));
 	
-	 mux_lwsrc(.Y(lwsrc_result),
+	 mux_lwsrc mux_lwsrc1(.Y(lwsrc_result),
 			.S(wb_lwsrc),
 			.I0(wb_movsrc_result),
 			.I1(wb_DM_out));

@@ -24,7 +24,7 @@ module pc(rst,
     end
     else begin
       
-        if(branch_true==`Branchtrue)begin
+        if(branch_true==`BranchTrue)begin
           pc_output <= new_addr; 
         end
         else begin

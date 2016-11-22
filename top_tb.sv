@@ -9,8 +9,9 @@ module top_tb;
   logic clk;
   logic rst;
   
+  integer i;
   
-  CPU cpu(.clk(clk)
+  CPU cpu(.clk(clk),
 	  .rst(rst));
   
   //clock gen.
@@ -24,35 +25,35 @@ module top_tb;
 
   `ifdef prog0
   		  //verification default program
-  			$readmemb("./Testbench/prog0/mins.prog",cpu.inst_memory.mem_data);
+  			$readmemb("mins.prog",cpu.inst_memory.mem_data);
   `elsif progA
   		  //verification hidden program 
   			$readmemb("mins.prog.A",cpu.inst_memory.mem_data);
   			$readmemb("mdm.prog.A",cpu.data_memory.mem_data);
   `elsif prog1
   		  //verification program 1
-  			$readmemb("./Testbench/prog1/mins.prog.p1",cpu.inst_memory.mem_data);
-  			$readmemb("./Testbench/prog1/mdm.prog.p1",cpu.data_memory.mem_data);
+  			$readmemb("mins.prog.p1",cpu.inst_memory.mem_data);
+  			$readmemb("mdm.prog.p1",cpu.data_memory.mem_data);
   `elsif prog2
   		  //verification program 2
-  			$readmemb("./Testbench/prog2/mins.prog.p2",cpu.inst_memory.mem_data);
-  			$readmemb("./Testbench/prog2/mdm.prog.p2",cpu.data_memory.mem_data);
+  			$readmemb("mins.prog.p2",cpu.inst_memory.mem_data);
+  			$readmemb("mdm.prog.p2",cpu.data_memory.mem_data);
   `elsif prog3
   		  //verification program 3
-  			$readmemb("./Testbench/prog3/mins.prog.p3",cpu.inst_memory.mem_data);
-  			$readmemb("./Testbench/prog3/mdm.prog.p3",cpu.data_memory.mem_data);
+  			$readmemb("mins.prog.p3",cpu.inst_memory.mem_data);
+  			$readmemb("mdm.prog.p3",cpu.data_memory.mem_data);
   `elsif prog4
   		  //verification program 4
-  			$readmemb("./Testbench/prog4/mins.prog.p4",cpu.inst_memory.mem_data);
-  			$readmemb("./Testbench/prog4/mdm.prog.p4",cpu.data_memory.mem_data);
+  			$readmemb("mins.prog.p4",cpu.inst_memory.mem_data);
+  			$readmemb("mdm.prog.p4",cpu.data_memory.mem_data);
   `elsif prog5
   		  //verification program 5
-  			$readmemb("./Testbench/prog5/mins.prog.p5",cpu.inst_memory.mem_data);
-  			$readmemb("./Testbench/prog5/mdm.prog.p5",cpu.data_memory.mem_data);
+  			$readmemb("mins.prog.p5",cpu.inst_memory.mem_data);
+  			$readmemb("mdm.prog.p5",cpu.data_memory.mem_data);
   `elsif prog6
   		  //verification program 6
-  			$readmemb("./Testbench/prog6/mins.prog.p6",cpu.inst_memory.mem_data);
-  			$readmemb("./Testbench/prog6/mdm.prog.p6",cpu.data_memory.mem_data);
+  			$readmemb("mins.prog.p6",cpu.inst_memory.mem_data);
+  			$readmemb("mdm.prog.p6",cpu.data_memory.mem_data);
   `endif
       #30000
       #10

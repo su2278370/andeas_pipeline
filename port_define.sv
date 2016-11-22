@@ -22,7 +22,7 @@
 `define ZeroWord 32'b0
 `define Thirdteen 12:0
 `define Fifteen 14:0
-`define TwentyThree 22:0
+`define Twentythree 22:0
 
 //Control
 `define RstEnable  1'b1

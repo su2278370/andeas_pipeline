@@ -1,10 +1,11 @@
 `timescale 1ns/10ps
+`include "port_define.sv"
 
 module DM(clk, 
-	  rst,
+	         rst,
           DM_read, 
           DM_write, 
-	  DM_addr, 
+	        DM_addr, 
           DM_in, 
           DM_out
 );
@@ -20,7 +21,7 @@ module DM(clk,
   
   output logic [`RegBus]DM_out;
   
-  logic [`RegBus]mem_data[`DmSize];
+  logic [`RegBus]mem_data[`DmSize-1:0];
   
   integer i;
   
@@ -40,9 +41,9 @@ module DM(clk,
       else if(DM_write)
         mem_data[DM_addr] <= DM_in;
      
-      else begin
+      else 
 	
-	DM_out <= `ZeroWord;
+	      DM_out <= `ZeroWord;
 
     end
       

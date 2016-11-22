@@ -1,4 +1,5 @@
 `timescale 1ns/10ps
+`include "port_define.sv"
 
 module mux_movsrc(Y,S,I0,I1);
     
