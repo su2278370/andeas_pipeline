@@ -19,7 +19,7 @@ module pc(rst,
   always_ff@(posedge clk, posedge rst)begin
     if(rst==`RstEnable)begin
 
-      	pc_output <= `ZeroWord;
+      pc_output <= `ZeroWord;
     
     end
     else begin

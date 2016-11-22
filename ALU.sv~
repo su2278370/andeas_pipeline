@@ -5,8 +5,10 @@ module alu(overflow,
 	src1, 
 	src2, 
 	aluctrl, 
+	enable, 
 	branch_true);
 
+input enable;
 input [`RegBus] src1 , src2;
 input [`AluCtrl] aluctrl;
 input [`InstAddrBus] alu_pc_o;

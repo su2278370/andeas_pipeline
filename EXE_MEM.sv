@@ -21,7 +21,7 @@ module exe_mem(clk,
   mem_sw_o,
   mem_DM_read, 
   mem_DM_write,
-  mem_alu_result, 
+  mem_alu_result 
 
 );
   

@@ -16,8 +16,8 @@ module if_id(clk,
   input [`RegBus]if_pc;
   input [`RegBus]if_inst;
   
-  output logic [`RegBus]id_pc;          
-  output logic [`RegBus]id_inst;
+  output [`RegBus]id_pc;          
+  output [`RegBus]id_inst;
   
   always@(posedge clk, posedge rst)begin
     if(rst==`RstEnable)begin

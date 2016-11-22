@@ -173,7 +173,7 @@ module CPU(clk,
                .waddr1(write_addr_o),
                .raddr1(reg1_addr_o),
                .raddr2(reg2_addr_o), 
-               .swaddr(sw_addr_o),
+               .swaddr(),
                .din(lwsrc_result));
 	   
 	   id_exe decoder_to_execution(.clk(clk),

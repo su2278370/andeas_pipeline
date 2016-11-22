@@ -10,8 +10,6 @@ module IM(clk,
   input clk;
   input rst; 
   input IM_read; 
-  input IM_write; 
-  input [`RegBus]IM_in;
   input [`ImAddr]IM_addr;
   
   output logic [data_size-1:0]IM_out;

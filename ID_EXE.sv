@@ -12,7 +12,7 @@ module id_exe(clk,
               id_write_o,
 			        id_aluctrl,
               id_lwsrc,
-              id_aluSrc2,
+              
               id_movsrc,
               id_DM_read,
               id_DM_write,
@@ -24,7 +24,7 @@ module id_exe(clk,
               exe_write_o,
 			        exe_aluctrl,
               exe_lwsrc,
-              exe_aluSrc2,
+              
               exe_movsrc,
               exe_DM_read,
               exe_DM_write
@@ -42,7 +42,7 @@ module id_exe(clk,
 	
 	input [`AluCtrl]    id_aluctrl;
   input id_lwsrc;
-  input id_aluSrc2;
+  
   input id_movsrc;
   input id_DM_read; 
   input id_DM_write;
@@ -58,7 +58,7 @@ module id_exe(clk,
 	output logic [`RegBus] exe_sw_o;
 	output logic [`RegBus] exe_write_o;
   output logic 	      exe_lwsrc;
-  output logic 	      exe_aluSrc2;
+ 
   output logic        exe_movsrc;
   output logic exe_DM_read; 
   output logic exe_DM_write;
@@ -73,7 +73,7 @@ module id_exe(clk,
 			exe_write_o <= `ZeroWord;
 			exe_aluctrl <= `AluCtrlNop;
 			exe_lwsrc <= `LwAluSrc;
-			exe_aluSrc2 <= `RegSrc;
+			
 			exe_movsrc  <= `MvAluSrc;
 			exe_DM_read  <= `ReadDisable; 
 			exe_DM_write <= `WriteDisable;
@@ -86,7 +86,7 @@ module id_exe(clk,
 			exe_write_o <= id_write_o;
 			exe_aluctrl <= id_alu_ctrl;
 			exe_lwsrc <= id_lwsrc;
-			exe_aluSrc2 <= id_aluSrc2;
+			
 			exe_movsrc <= id_movsrc;  
 			exe_DM_read  <= id_DM_read; 
 			exe_DM_write <= id_DM_write;
