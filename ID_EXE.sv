@@ -4,6 +4,7 @@
 
 module id_exe(clk,
               rst,
+	      flush,//branch flush
               id_pc_o,
               id_branch_addr,
               id_write_addr_o,
@@ -35,6 +36,7 @@ module id_exe(clk,
 );
 	input clk;
 	input rst;
+	input flush;
 	
 	input [`InstAddrBus] id_pc_o;
 	input [`InstAddrBus] id_branch_addr;
@@ -72,7 +74,7 @@ module id_exe(clk,
   output logic exe_DM_write;
 	
 	always@(posedge clk, posedge rst)begin
-		if(rst==`RstEnable)begin
+		if(rst==`RstEnable || flush==`FlushEnable)begin
 			exe_pc_o <= `ZeroWord;
 			exe_branch_addr <= `ZeroWord;
 			exe_write_addr_o <= `ZeroRegAddr;	

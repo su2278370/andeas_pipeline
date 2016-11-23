@@ -26,7 +26,7 @@ module DM(clk,
   integer i;
   
   always_ff@(posedge clk, posedge rst)begin
-    if(rst)begin
+    if(rst==`RstEnable)begin
       for(i=0;i<`DmSize;i=i+1)begin
         
         mem_data[i] <= `ZeroWord;
@@ -35,10 +35,10 @@ module DM(clk,
       
     end
     else begin
-      if(DM_read)
+      if(DM_read==`ReadEnable)
         DM_out <= mem_data[DM_addr];
 
-      else if(DM_write)
+      else if(DM_write==`WriteEnable)
         mem_data[DM_addr] <= DM_in;
      
       

@@ -6,7 +6,7 @@
 
 `define RegBus 31:0
 `define RegAddrBus 4:0
-`define ZeroRegAddr 5'b0
+`define ZeroRegAddr 5'b00000
 `define RegNum 32
 
 `define InstBus 31:0
@@ -20,13 +20,14 @@
 `define TwentySE  2'b11
 
 //Branch Extension
-`define ZeroWord 32'b0
+`define ZeroWord 32'b00000000_00000000_00000000_00000000
 `define Thirdteen 12:0
 `define Fifteen 14:0
 `define Twentythree 22:0
 
 //Control
 `define RstEnable  1'b1
+`define FlushEnable  1'b1
 `define BranchTrue 1'b1
 `define BranchFalse 1'b0
 `define ReadEnable   1'b1
