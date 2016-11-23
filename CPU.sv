@@ -65,7 +65,7 @@ module CPU(clk,
 	//------------Decoder to Execution---//
   	
 	 logic [`InstAddrBus] exe_pc_o;
-	 logic [`InstAddrBus] exe_write_addr_o;
+	 logic [`RegAddrBus] exe_write_addr_o;
 	 logic [`InstAddrBus] exe_branch_addr;
 	 logic [`RegBus] exe_reg1_o;
 	 logic [`RegBus] exe_reg2_o;
@@ -91,7 +91,7 @@ module CPU(clk,
 	//----------Execution to Memory-------//
    	 logic  	  mem_lwsrc;
   
-    logic [`InstAddrBus] mem_write_addr_o;
+    logic [`RegAddrBus] mem_write_addr_o;
   	 logic           mem_movsrc;
   	 logic [`RegBus] mem_write_o;
 
@@ -112,7 +112,7 @@ module CPU(clk,
 	//-----------Memory to Writeback-----//
 	 logic wb_lwsrc;
 	 logic wb_reg_write;
-	 logic [`InstAddrBus] wb_write_addr_o;
+	 logic [`RegAddrBus] wb_write_addr_o;
   	 logic [`RegBus] wb_movsrc_result;
   	 logic [`RegBus] wb_DM_out;
 
@@ -264,17 +264,18 @@ module CPU(clk,
   	      .mem_write_addr_o(mem_write_addr_o),
   	      .mem_reg_write(mem_reg_write),
 	      .mem_movsrc_result(movsrc_result),
-   	      .mem_DM_out(DM_out),
+   	      //.mem_DM_out(DM_out),
 	      .wb_lwsrc(wb_lwsrc),
 	      .wb_write_addr_o(wb_write_addr_o),
 	      .wb_reg_write(wb_reg_write),
-	      .wb_movsrc_result(wb_movsrc_result),
-	      .wb_DM_out(wb_DM_out));
+	      .wb_movsrc_result(wb_movsrc_result)
+	      //.wb_DM_out(wb_DM_out)
+	      );
 	
 	 mux_lwsrc mux_lwsrc1(.Y(lwsrc_result),
 			.S(wb_lwsrc),
 			.I0(wb_movsrc_result),
-			.I1(wb_DM_out));
+			.I1(DM_out));
 		               
 	
 endmodule

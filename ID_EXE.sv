@@ -38,7 +38,7 @@ module id_exe(clk,
 	
 	input [`InstAddrBus] id_pc_o;
 	input [`InstAddrBus] id_branch_addr;
-	input [`InstAddrBus] id_write_addr_o;
+	input [`RegAddrBus] id_write_addr_o;
 	
 	input [`RegBus] id_reg1_o;
 	input [`RegBus] id_reg2_o;
@@ -56,7 +56,7 @@ module id_exe(clk,
 	//Interface to Alu
 	output logic [`InstAddrBus] exe_pc_o;
 	output logic [`InstAddrBus] exe_branch_addr;
-	output logic [`InstAddrBus] exe_write_addr_o;
+	output logic [`RegAddrBus] exe_write_addr_o;
 	output logic [`RegBus] exe_reg1_o;
 	output logic [`RegBus] exe_reg2_o;
   output logic [`AluCtrl]    exe_aluctrl;
@@ -75,7 +75,7 @@ module id_exe(clk,
 		if(rst==`RstEnable)begin
 			exe_pc_o <= `ZeroWord;
 			exe_branch_addr <= `ZeroWord;
-			exe_write_addr_o <= `ZeroWord;	
+			exe_write_addr_o <= `ZeroRegAddr;	
 			exe_reg1_o <= `ZeroWord;
 			exe_reg2_o <= `ZeroWord;
 			exe_sw_o   <= `ZeroWord;

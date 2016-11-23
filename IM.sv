@@ -32,8 +32,6 @@ module IM(clk,
       if(IM_read)
         IM_out <= mem_data[IM_addr];
       
-      else
-	IM_out <= `ZeroWord;
     end
  
   end

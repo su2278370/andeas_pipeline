@@ -41,9 +41,7 @@ module DM(clk,
       else if(DM_write)
         mem_data[DM_addr] <= DM_in;
      
-      else 
-	
-	      DM_out <= `ZeroWord;
+      
 
     end
       

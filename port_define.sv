@@ -6,6 +6,7 @@
 
 `define RegBus 31:0
 `define RegAddrBus 4:0
+`define ZeroRegAddr 5'b0
 `define RegNum 32
 
 `define InstBus 31:0

@@ -36,7 +36,7 @@ module exe_mem(clk,
   input [`RegBus] exe_write_o;
   input  	  exe_lwsrc;
   input           exe_movsrc;
-  input  [`InstAddrBus]exe_write_addr_o;
+  input  [`RegAddrBus]exe_write_addr_o;
   input           exe_reg_write;
   input           exe_DM_read; 
   input           exe_DM_write;
@@ -53,7 +53,7 @@ module exe_mem(clk,
   
   //Interface to Date Memory  
   output logic [`RegBus] mem_sw_o;
-  output logic [`InstAddrBus] mem_write_addr_o;
+  output logic [`RegAddrBus] mem_write_addr_o;
   output logic mem_reg_write;
   output logic           mem_DM_read; 
   output logic           mem_DM_write;
@@ -71,7 +71,7 @@ module exe_mem(clk,
       mem_write_o <= `ZeroWord;
       mem_lwsrc <= `LwAluSrc;
       mem_movsrc <= `MvAluSrc;
-      mem_write_addr_o <= `ZeroWord;
+      mem_write_addr_o <= `ZeroRegAddr;
       mem_reg_write <= `WriteDisable;
       mem_DM_read <= `ReadDisable; 
       mem_DM_write <= `WriteDisable;
