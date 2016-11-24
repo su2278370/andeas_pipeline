@@ -66,6 +66,7 @@ module CPU(clk,
 	//-----------Forwarding--------------//
 	logic [`RegBus] forward1_data;
 	logic [`RegBus] forward2_data;
+	logic [`RegBus] forwardsw_data;
 
 	//------------Decoder to Execution---//
   	
@@ -191,22 +192,28 @@ module CPU(clk,
 	   	.id_reg1_o(reg1_o),
 	   	.id_reg2_addr(reg2_addr_o),
 		.id_reg2_read(reg2_read),
-	   	.id_reg2_o(reg2_o),		
+	   	.id_reg2_o(reg2_o),
+		.id_sw_addr(sw_addr_o),
+		.id_sw_read(sw_read),
+		.id_sw_o(sw_o),		
 		.exe_write_addr(exe_write_addr_o),
         	.exe_reg_write(exe_reg_write),
 		.exe_movsrc(exe_movsrc),
 		.exe_alu_data(alu_result),
-		.mov_data(exe_write_o),
+		.exe_mov_data(exe_write_o),
 		.mem_write_addr(mem_write_addr_o),
+	        .mem_movsrc(mem_movsrc),
 	   	.mem_reg_write(mem_reg_write),
 		.mem_DM_read(mem_DM_read),
+		.mem_mov_data(mem_write_o),
 		.mem_alu_data(mem_alu_result),
            	.mem_data(DM_out),
            	//.wb_write_addr(wb_write_addr_o),   
 	   	//.wb_reg_write(wb_reg_write),
 	   	//.wb_data(),
 	   	.forward1_data(forward1_data),
-           	.forward2_data(forward2_data));
+           	.forward2_data(forward2_data),
+		.forwardsw_data(forwardsw_data));
 	   
 	   id_exe decoder_to_execution(.clk(clk),
               .rst(rst),
@@ -216,7 +223,7 @@ module CPU(clk,
               .id_write_addr_o(write_addr_o),
               .id_reg1_o(forward1_data),
               .id_reg2_o(forward2_data),
-              .id_sw_o(sw_o),
+              .id_sw_o(forwardsw_data),
               .id_write_o(write_o),
 			        .id_aluctrl(alu_ctrl),
               .id_lwsrc(lwsrc),
