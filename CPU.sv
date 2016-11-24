@@ -5,6 +5,7 @@
 `include "IF_ID.sv"
 `include "decoder.sv"
 `include "regfile.sv"
+`include "forwarding.sv"
 `include "ID_EXE.sv"
 `include "ALU.sv"
 `include "EXE_MEM.sv"
@@ -61,6 +62,10 @@ module CPU(clk,
    	logic [`RegBus] dout1;
    	logic [`RegBus] dout2;
    	logic [`RegBus] swdout;
+
+	//-----------Forwarding--------------//
+	logic [`RegBus] forward1_data;
+	logic [`RegBus] forward2_data;
 
 	//------------Decoder to Execution---//
   	
@@ -179,6 +184,29 @@ module CPU(clk,
                .raddr2(reg2_addr_o), 
                .swaddr(sw_addr_o),
                .din(lwsrc_result));
+
+	   forwarding forward_unit(
+		.id_reg1_addr(reg1_addr_o),
+		.id_reg1_read(reg1_read),
+	   	.id_reg1_o(reg1_o),
+	   	.id_reg2_addr(reg2_addr_o),
+		.id_reg2_read(reg2_read),
+	   	.id_reg2_o(reg2_o),		
+		.exe_write_addr(exe_write_addr_o),
+        	.exe_reg_write(exe_reg_write),
+		.exe_movsrc(exe_movsrc),
+		.exe_alu_data(alu_result),
+		.mov_data(exe_write_o),
+		.mem_write_addr(mem_write_addr_o),
+	   	.mem_reg_write(mem_reg_write),
+		.mem_DM_read(mem_DM_read),
+		.mem_alu_data(mem_alu_result),
+           	.mem_data(DM_out),
+           	//.wb_write_addr(wb_write_addr_o),   
+	   	//.wb_reg_write(wb_reg_write),
+	   	//.wb_data(),
+	   	.forward1_data(forward1_data),
+           	.forward2_data(forward2_data));
 	   
 	   id_exe decoder_to_execution(.clk(clk),
               .rst(rst),
@@ -186,8 +214,8 @@ module CPU(clk,
               .id_pc_o(id_pc),
               .id_branch_addr(branch_addr),
               .id_write_addr_o(write_addr_o),
-              .id_reg1_o(reg1_o),
-              .id_reg2_o(reg2_o),
+              .id_reg1_o(forward1_data),
+              .id_reg2_o(forward2_data),
               .id_sw_o(sw_o),
               .id_write_o(write_o),
 			        .id_aluctrl(alu_ctrl),

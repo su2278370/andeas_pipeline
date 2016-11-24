@@ -41,6 +41,8 @@
 `define LwAluSrc 1'b0
 `define MvRegSrc 1'b1
 `define MvAluSrc 1'b0
+`define FwTrue  1'b1
+`define FwFalse 1'b0
 
 
 //Alu control

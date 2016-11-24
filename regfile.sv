@@ -31,7 +31,7 @@ module regfile(clk,
   
   integer i;
   
-  always_ff@(posedge clk, posedge rst)begin
+  /*always_ff@(posedge clk, posedge rst)begin
     
     if(rst==`RstEnable)begin
         for(i=0;i<`RegNum;i=i+1)begin
@@ -45,7 +45,24 @@ module regfile(clk,
             
     end
     
+  end*/
+
+  always_comb begin 
+
+	if(rst==`RstEnable)begin
+        	for(i=0;i<`RegNum;i=i+1)begin
+         		 rw_reg[i] <= `ZeroWord;
+        	end
+    	end else begin
+        
+        	if(write==`WriteEnable)
+            
+            		rw_reg[waddr1] <= din;
+            
+    	end
+
   end
+
   
   always_comb begin
     
