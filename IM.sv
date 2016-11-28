@@ -39,14 +39,14 @@ module IM(clk,
     if(rst==`RstEnable)begin
       for(i=0;i<`ImSize;i=i+1)begin
         
-        mem_data[i] <= `ZeroWord;
+        mem_data[i] = `ZeroWord;
       end
-      IM_out <= `ZeroWord;
+      IM_out = `ZeroWord;
       
     end
     else begin
       if(IM_read==`ReadEnable)
-      	IM_out <= mem_data[IM_addr];  
+      	IM_out = mem_data[IM_addr];  
     end   
 	
   end

@@ -2,7 +2,7 @@
 `include "IM.sv"
 `include "DM.sv"
 
-`define prog0
+`define prog1
 
 `ifdef syn
   `include "tsmc13_neg.v"
