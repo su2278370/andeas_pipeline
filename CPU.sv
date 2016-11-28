@@ -16,15 +16,31 @@
 `include "performance.sv"
 
 module CPU(clk, 
-	   rst          
+	   rst,
+	   mem_DM_read, 
+           mem_DM_write, 
+	   mem_alu_result, 
+           mem_sw_o, 
+           DM_out,
+           pc_output, 
+           IM_out
  );
      
    
 	input clk;
 	input rst;
-   
+	input [`RegBus] IM_out;
+	input [`RegBus] DM_out;
+
+	output	mem_DM_read; //DM_read
+	output	mem_DM_write; //DM_write
+	output  [`DmAddr] mem_alu_result; //DM_addr
+	output	[`RegBus] mem_sw_o; //DM_in
+	
+	output	[`ImAddr] pc_output; //IM_addr
+	
    	//-------Instruction memory----------//
-   	logic [`RegBus] IM_out;
+   	//logic [`RegBus] IM_out;
 	
 	//--------program counter------------//
 	logic [`InstAddrBus] pc_output;
@@ -112,7 +128,7 @@ module CPU(clk,
   	 logic [`RegBus] mem_alu_result; 
    
    	//------------Data memory------------//
-   	 logic [`RegBus]DM_out;   	
+   	//logic [`RegBus]DM_out;   	
    	
  	//------------Mux Move Source--------//
 	 logic [`RegBus] movsrc_result;
@@ -133,11 +149,11 @@ module CPU(clk,
 	logic [`InstCountBus]   inst_count;
    
  
-  	   IM inst_memory(.clk(clk), 
+  	   /*IM inst_memory(.clk(clk), 
 	  		       .rst(rst),
           		.IM_read(1'b1), 
           		.IM_addr(pc_output), 
-          		.IM_out(IM_out));
+          		.IM_out(IM_out));*/
   
    
 	   pc program_counter(.clk(clk), .rst(rst), 
@@ -294,13 +310,13 @@ module CPU(clk,
 		  .mem_DM_write(mem_DM_write),
 		  .mem_alu_result(mem_alu_result) );
 
-	   DM data_memory(.clk(clk), 
+	   /*DM data_memory(.clk(clk), 
 		  .rst(rst),
 		  .DM_read(mem_DM_read), 
 		  .DM_write(mem_DM_write), 
 		  .DM_addr(mem_alu_result), 
 		  .DM_in(mem_sw_o), 
-		  .DM_out(DM_out));
+		  .DM_out(DM_out));*/
 
 	   mux_movsrc mux_movsrc1(.Y(movsrc_result),
 			.S(mem_movsrc),
