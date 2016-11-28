@@ -92,6 +92,10 @@ module forwarding(
 			stall_pc = 1'b1;
 			stall_if_id = 1'b1;
 		end
+		else if(opcode==6'b000010)begin
+		  stall_pc = 1'b1;
+			stall_if_id = 1'b1;
+		end
 		else begin
 			stall_pc = 1'b0;
 			stall_if_id = 1'b0;

@@ -15,7 +15,7 @@
 `include "mux_lwsrc.sv"
 `include "performance.sv"
 
-module CPU(clk, 
+module top(clk, 
 	   rst,
 	   mem_DM_read, 
            mem_DM_write, 
@@ -23,7 +23,9 @@ module CPU(clk,
            mem_sw_o, 
            DM_out,
            pc_output, 
-           IM_out
+           IM_out,
+	   cycle_count,
+	   inst_count
  );
      
    
@@ -38,6 +40,11 @@ module CPU(clk,
 	output	[`RegBus] mem_sw_o; //DM_in
 	
 	output	[`ImAddr] pc_output; //IM_addr
+
+	//-----------Performance Counter-----//	
+	output [`CycleCountBus]	cycle_count;
+	output [`InstCountBus]   inst_count;
+   
 	
    	//-------Instruction memory----------//
    	//logic [`RegBus] IM_out;
@@ -143,11 +150,6 @@ module CPU(clk,
 	//-----------Mux Load Source---------//
   	 logic [`RegBus] lwsrc_result;
 
-	//-----------Performance Counter-----//
-	
-	logic [`CycleCountBus]	cycle_count;
-	logic [`InstCountBus]   inst_count;
-   
  
   	   /*IM inst_memory(.clk(clk), 
 	  		       .rst(rst),

@@ -1,10 +1,18 @@
 `timescale 1ns/10ps
-
-`include "CPU.sv"
 `include "IM.sv"
 `include "DM.sv"
-`define PERIOD 10
+
 `define prog0
+
+`ifdef syn
+  `include "tsmc13_neg.v"
+  `include "top_syn.v"
+`else
+  `include "top.sv"
+`endif
+
+`define PERIOD 20 // modify by yourself, maximum 20 ns
+`define End_CYCLE 100000
 
 module top_tb;
 
@@ -21,9 +29,14 @@ module top_tb;
 	
   logic	[`ImAddr] pc_output; //IM_addr 
   
-  integer i;
+  //Performance Counter
+  logic [127:0] cycle_cnt;
+  logic [63:0] ins_cnt;
   
-  CPU cpu(.clk(clk),
+  //Check
+  logic fin;
+    
+  top TOP1(.clk(clk),
 	  .rst(rst),
 	  .mem_DM_read(mem_DM_read), 
           .mem_DM_write(mem_DM_write), 
@@ -31,15 +44,17 @@ module top_tb;
           .mem_sw_o(mem_sw_o), 
           .DM_out(DM_out),
           .pc_output(pc_output), 
-          .IM_out(IM_out));
+          .IM_out(IM_out),
+	  .cycle_count(cycle_cnt),
+	  .inst_count(ins_cnt));
 
-  IM inst_memory(.clk(clk), 
+  IM IM1(.clk(clk), 
 	   	 .rst(rst),
           	 .IM_read(1'b1), 
           	 .IM_addr(pc_output), 
           	 .IM_out(IM_out));
 
-  DM data_memory(.clk(clk), 
+  DM DM1(.clk(clk), 
 		 .rst(rst),
 		 .DM_read(mem_DM_read), 
 		 .DM_write(mem_DM_write), 
@@ -48,59 +63,108 @@ module top_tb;
 		 .DM_out(DM_out));
 
   
-  //clock gen.
-  always #(`PERIOD/2) clk=~clk;
   
+always #(`PERIOD/2) clk = ~clk;
   
-  initial begin
-  clk=0;
-  rst=1'b1;
-  #(`PERIOD*2) rst=1'b0;
-
+  integer i;
+   ///////////Default instruction verification//////////
   `ifdef prog0
-  		  //verification default program
-  			$readmemb("mins.prog",inst_memory.mem_data);
+  initial begin
+          clk = 0;
+          rst = 0;
+    fin = 0;
+          #1 rst = 1;
+          #(`PERIOD) rst = 0;
+          $readmemb("./prog0/IM_data.dat",IM1.mem_data);
+          $readmemh("./prog0/DM_data.dat",DM1.mem_data);
+    
+  end
+  
+  ///////////Individual instruction verification//////////
   `elsif prog1
-  		  //verification program 1
-  			$readmemb("mins.prog.p1",inst_memory.mem_data);
-  			//$readmemb("mdm.prog.p1",data_memory.mem_data);
+  initial begin
+          clk = 0;
+          rst = 0;
+    fin = 0;
+          #1 rst = 1;
+          #(`PERIOD) rst = 0;
+          $readmemb("./prog1/IM_data.dat",IM1.mem_data);
+          $readmemh("./prog1/DM_data.dat",DM1.mem_data);
+    
+  end
+  
+  /////////// 64bit add/sub ///////////
   `elsif prog2
-  		  //verification program 2
-  			$readmemb("mins.prog.p2",inst_memory.mem_data);
-  			//$readmemb("mdm.prog.p2",data_memory.mem_data);
-  `elsif prog3
-  		  //verification program 3
-  			$readmemb("mins.prog.p3",inst_memory.mem_data);
-  			//$readmemb("mdm.prog.p3",data_memory.mem_data);
-  `elsif prog4
-  		  //verification program 4
-  			$readmemb("mins.prog.p4",inst_memory.mem_data);
-  			//$readmemb("mdm.prog.p4",data_memory.mem_data);
-  `elsif prog5
-  		  //verification program 5
-  			$readmemb("mins.prog.p5",inst_memory.mem_data);
-  			//$readmemb("mdm.prog.p5",data_memory.mem_data);
-  `elsif prog6
-  		  //verification program 6
-  			$readmemb("mins.prog.p6",inst_memory.mem_data);
-  			//$readmemb("mdm.prog.p6",data_memory.mem_data);
-  `endif
-      #1000
-      #10
-      $display( "done" );
-      for( i=0;i<31;i=i+1 ) $display( "IM[%h]=%h",i,inst_memory.mem_data[i] ); 
-      for( i=0;i<32;i=i+1 ) $display( "register[%d]=%d",i,cpu.regfile1.rw_reg[i] ); 
-      for( i=0;i<40;i=i+1 ) $display( "DM[%d]=%d",i,data_memory.mem_data[i] );
-      $display( "DM[%d]=%d",32767,data_memory.mem_data[32767] );      
-      $display( "DM[%d]=%d",32766,data_memory.mem_data[32766] );
-      $finish;
+  initial begin
+          clk = 0;
+          rst = 0;
+    fin = 0;
+          #1 rst = 1;
+          #(`PERIOD) rst = 0;
+          $readmemb("./prog2/IM_data.dat",IM1.mem_data);
+          $readmemh("./prog2/DM_data.dat",DM1.mem_data);
+
   end
 
+  /////////// SAD ///////////
+  `elsif prog3
   initial begin
-	  $dumpfile("top.fsdb");
-	  $dumpvars(0, top_tb);
-	  //$fsdbDumpfile("top.fsdb");
-	  //$fsdbDumpvars(0, top_tb);
-	  #10000000 $finish;
+    clk = 0;
+    rst = 0;
+    fin = 0;
+    #1 rst = 1;
+    #(`PERIOD) rst = 0;
+    $readmemb("./prog3/IM_data.dat",IM1.mem_data);
+    $readmemh("./prog3/image1.dat",DM1.mem_data,2); // do not modify address here, modify file name only
+    $readmemh("./prog3/image2.dat",DM1.mem_data,800); // do not modify address here, modify file name only
+    
   end
+  `endif
+  
+  always@(posedge clk)begin
+    if(DM1.mem_data[32767]==32'h0000FFFF) fin = 1'b1;
+  end
+    
+  initial begin
+      @(posedge fin)      
+      if(fin)begin
+        $display("-----------------------------------------------------\n");
+        $display("----------------Print DM[0] ~ DM[31]-----------------\n");
+        for(i=0;i<32;i=i+1)begin
+        $display("DM_MEM[%d] = %d ",i,DM1.mem_data[i]);
+        end
+        $display("---------------------Performance----------------------\n");
+        $display("Cycle Count = %d", cycle_cnt);
+        $display("Instruction Count = %d", ins_cnt);
+        $display("-----------------------FINISH------------------------\n");
+        $display("-----------------------------------------------------\n");
+      end
+      #(`PERIOD/2); $finish;
+  end
+  
+  `ifdef syn
+  //post_syn simulation
+    initial $sdf_annotate("top_syn.sdf", TOP1); // add your sdf file here
+  `endif
+  
+  initial begin
+  `ifdef FSDB
+    $fsdbDumpfile("top.fsdb");
+    $fsdbDumpvars;
+  `elsif VCD
+    $dumpfile("top.vcd");
+    $dumpvars;
+  `endif
+  end
+  
+  initial begin
+    #(`PERIOD * `End_CYCLE);
+    $display("-----------------------------------------------------\n");
+    $display("Error!!! Somethings' wrong with your code ...!\n");
+    $display("Perhaps you can adjust the bigger value of End_CYCLE and then run the simulation again!");
+    $display("-------------------------FAIL------------------------\n");
+    $display("-----------------------------------------------------\n");
+    $finish;
+end
+  
 endmodule
