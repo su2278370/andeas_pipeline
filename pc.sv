@@ -3,13 +3,15 @@
 
 module pc(rst, 
           clk, 
+	  stall,
           branch_true,
           new_addr, 
           pc_output
 );
   
   input  clk;
-  input  rst; 
+  input  rst;
+  input  stall; 
   input  branch_true;
   input  [`InstAddrBus]new_addr;
   
@@ -21,6 +23,11 @@ module pc(rst,
 
       	pc_output <= `ZeroWord;
     
+    end
+    else if(stall==`StallEnable)begin
+
+	pc_output <= pc_output;
+
     end
     else begin
       

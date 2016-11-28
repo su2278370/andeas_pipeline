@@ -2,6 +2,7 @@
 `include "port_define.sv"
 
 module forwarding(
+	   id_inst, //load dependency
 	   id_reg1_addr,
 	   id_reg2_addr,
 	   id_sw_addr,
@@ -31,8 +32,11 @@ module forwarding(
 	   forwardsw_data,
            //forwardsrc1,
 	   //forwardsrc2
+	   stall_pc, //load dependency
+	   stall_if_id //load dependency	   
 );
 	
+	input [`RegBus] id_inst;
 	input [`RegAddrBus] id_reg1_addr;
 	input [`RegAddrBus] id_reg2_addr;
         input [`RegAddrBus] id_sw_addr;
@@ -67,6 +71,33 @@ module forwarding(
 	output logic [`RegBus] forwardsw_data;
 	//output logic forwardsrc1;
 	//output logic forwardsrc2;
+
+
+	output logic stall_pc; //load depedency
+	output logic stall_if_id;//load depedency
+
+	logic [5:0] opcode;
+	logic [7:0] sub_opcode_8;
+
+	always_comb begin
+		
+		opcode = id_inst[30:25];
+		sub_opcode_8 = id_inst[7:0];
+
+	end
+	
+	always_comb begin
+
+		if(opcode==6'b011100 && sub_opcode_8==`LW)begin
+			stall_pc = 1'b1;
+			stall_if_id = 1'b1;
+		end
+		else begin
+			stall_pc = 1'b0;
+			stall_if_id = 1'b0;
+		end
+	end	
+
 
 	always_comb begin
 		

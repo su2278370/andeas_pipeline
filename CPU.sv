@@ -67,6 +67,8 @@ module CPU(clk,
 	logic [`RegBus] forward1_data;
 	logic [`RegBus] forward2_data;
 	logic [`RegBus] forwardsw_data;
+	logic stall_pc;
+	logic stall_if_id;
 
 	//------------Decoder to Execution---//
   	
@@ -97,7 +99,7 @@ module CPU(clk,
 	//----------Execution to Memory-------//
    	 logic  	  mem_lwsrc;
   
-    logic [`RegAddrBus] mem_write_addr_o;
+    	 logic [`RegAddrBus] mem_write_addr_o;
   	 logic           mem_movsrc;
   	 logic [`RegBus] mem_write_o;
 
@@ -134,6 +136,7 @@ module CPU(clk,
   
    
 	   pc program_counter(.clk(clk), .rst(rst), 
+			      .stall(stall_pc),
 		              .branch_true(branch_true),
          		      .new_addr(new_addr), 
          	              .pc_output(pc_output));
@@ -141,6 +144,7 @@ module CPU(clk,
 	   if_id fetch_to_decoder(.clk(clk),
              .rst(rst),
 	     .flush(branch_true),
+	     .stall(stall_if_id),
              .if_pc(pc_output),
              .if_inst(IM_out),
              .id_pc(id_pc),
@@ -187,6 +191,7 @@ module CPU(clk,
                .din(lwsrc_result));
 
 	   forwarding forward_unit(
+		.id_inst(id_inst),
 		.id_reg1_addr(reg1_addr_o),
 		.id_reg1_read(reg1_read),
 	   	.id_reg1_o(reg1_o),
@@ -213,7 +218,9 @@ module CPU(clk,
 	   	//.wb_data(),
 	   	.forward1_data(forward1_data),
            	.forward2_data(forward2_data),
-		.forwardsw_data(forwardsw_data));
+		.forwardsw_data(forwardsw_data),
+		.stall_pc(stall_pc),
+		.stall_if_id(stall_if_id));
 	   
 	   id_exe decoder_to_execution(.clk(clk),
               .rst(rst),
@@ -301,18 +308,18 @@ module CPU(clk,
   	      .mem_write_addr_o(mem_write_addr_o),
   	      .mem_reg_write(mem_reg_write),
 	      .mem_movsrc_result(movsrc_result),
-   	      //.mem_DM_out(DM_out),
+   	      .mem_DM_out(DM_out),
 	      .wb_lwsrc(wb_lwsrc),
 	      .wb_write_addr_o(wb_write_addr_o),
 	      .wb_reg_write(wb_reg_write),
-	      .wb_movsrc_result(wb_movsrc_result)
-	      //.wb_DM_out(wb_DM_out)
+	      .wb_movsrc_result(wb_movsrc_result),
+	      .wb_DM_out(wb_DM_out)
 	      );
 	
 	 mux_lwsrc mux_lwsrc1(.Y(lwsrc_result),
 			.S(wb_lwsrc),
 			.I0(wb_movsrc_result),
-			.I1(DM_out));
+			.I1(wb_DM_out));
 		               
 	
 endmodule

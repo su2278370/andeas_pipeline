@@ -8,6 +8,7 @@ add wave -noupdate -radix decimal /top_tb/cpu/inst_memory/IM_addr
 add wave -noupdate -radix binary /top_tb/cpu/inst_memory/IM_out
 add wave -noupdate /top_tb/cpu/inst_memory/i
 add wave -noupdate -divider {Program counter}
+add wave -noupdate /top_tb/cpu/program_counter/stall
 add wave -noupdate /top_tb/cpu/program_counter/branch_true
 add wave -noupdate -radix decimal /top_tb/cpu/program_counter/new_addr
 add wave -noupdate -radix decimal /top_tb/cpu/program_counter/pc_output
@@ -17,6 +18,7 @@ add wave -noupdate -radix binary /top_tb/cpu/fetch_to_decoder/if_inst
 add wave -noupdate -radix decimal /top_tb/cpu/fetch_to_decoder/id_pc
 add wave -noupdate -radix binary /top_tb/cpu/fetch_to_decoder/id_inst
 add wave -noupdate /top_tb/cpu/fetch_to_decoder/flush
+add wave -noupdate /top_tb/cpu/fetch_to_decoder/stall
 add wave -noupdate -divider Decoder
 add wave -noupdate /top_tb/cpu/decoder1/inst_i
 add wave -noupdate /top_tb/cpu/decoder1/reg1_data_i
@@ -74,12 +76,16 @@ add wave -noupdate /top_tb/cpu/forward_unit/id_reg2_read
 add wave -noupdate /top_tb/cpu/forward_unit/exe_write_addr
 add wave -noupdate /top_tb/cpu/forward_unit/exe_reg_write
 add wave -noupdate /top_tb/cpu/forward_unit/exe_movsrc
-add wave -noupdate /top_tb/cpu/forward_unit/mov_data
 add wave -noupdate /top_tb/cpu/forward_unit/mem_write_addr
 add wave -noupdate /top_tb/cpu/forward_unit/mem_reg_write
 add wave -noupdate /top_tb/cpu/forward_unit/mem_data
 add wave -noupdate /top_tb/cpu/forward_unit/forward1_data
 add wave -noupdate /top_tb/cpu/forward_unit/forward2_data
+add wave -noupdate -radix binary /top_tb/cpu/forward_unit/id_inst
+add wave -noupdate /top_tb/cpu/forward_unit/stall_pc
+add wave -noupdate /top_tb/cpu/forward_unit/stall_if_id
+add wave -noupdate -radix binary /top_tb/cpu/forward_unit/opcode
+add wave -noupdate -radix binary /top_tb/cpu/forward_unit/sub_opcode_8
 add wave -noupdate -divider {Decoder to Execution}
 add wave -noupdate -radix decimal /top_tb/cpu/decoder_to_execution/id_pc_o
 add wave -noupdate /top_tb/cpu/decoder_to_execution/id_branch_addr
@@ -154,7 +160,7 @@ add wave -noupdate /top_tb/cpu/mux_lwsrc1/I1
 add wave -noupdate /top_tb/cpu/mux_lwsrc1/Y
 add wave -noupdate -childformat {{{/top_tb/cpu/regfile1/rw_reg[31]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[30]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[29]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[28]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[27]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[26]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[25]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[24]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[23]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[22]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[21]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[20]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[19]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[18]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[17]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[16]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[15]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[14]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[13]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[12]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[11]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[10]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[9]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[8]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[7]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[6]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[5]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[4]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[3]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[2]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[1]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[0]} -radix decimal}} -expand -subitemconfig {{/top_tb/cpu/regfile1/rw_reg[31]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[30]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[29]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[28]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[27]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[26]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[25]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[24]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[23]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[22]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[21]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[20]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[19]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[18]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[17]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[16]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[15]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[14]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[13]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[12]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[11]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[10]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[9]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[8]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[7]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[6]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[5]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[4]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[3]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[2]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[1]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[0]} {-height 17 -radix decimal}} /top_tb/cpu/regfile1/rw_reg
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 7} {238790 ps} 0}
+WaveRestoreCursors {{Cursor 7} {51920 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 353
 configure wave -valuecolwidth 317
@@ -170,4 +176,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {132070 ps} {325650 ps}
+WaveRestoreZoom {0 ps} {193580 ps}

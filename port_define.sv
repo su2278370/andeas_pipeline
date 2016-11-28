@@ -28,6 +28,7 @@
 //Control
 `define RstEnable  1'b1
 `define FlushEnable  1'b1
+`define StallEnable  1'b1
 `define BranchTrue 1'b1
 `define BranchFalse 1'b0
 `define ReadEnable   1'b1
