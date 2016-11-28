@@ -56,8 +56,9 @@ module top_tb;
       $display( "done" );
       for( i=0;i<31;i=i+1 ) $display( "IM[%h]=%h",i,cpu.inst_memory.mem_data[i] ); 
       for( i=0;i<32;i=i+1 ) $display( "register[%d]=%d",i,cpu.regfile1.rw_reg[i] ); 
-      for( i=0;i<40;i=i+1 ) $display( "DM[%d]=%d",i,cpu.data_memory.mem_data[i] );      
-
+      for( i=0;i<40;i=i+1 ) $display( "DM[%d]=%d",i,cpu.data_memory.mem_data[i] );
+      $display( "DM[%d]=%d",32767,cpu.data_memory.mem_data[32767] );      
+      $display( "DM[%d]=%d",32766,cpu.data_memory.mem_data[32766] );
       $finish;
   end
 

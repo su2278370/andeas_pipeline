@@ -13,7 +13,7 @@
 `include "mux_movsrc.sv"
 `include "MEM_WB.sv"
 `include "mux_lwsrc.sv"
-
+`include "performance.sv"
 
 module CPU(clk, 
 	   rst          
@@ -126,6 +126,11 @@ module CPU(clk,
 
 	//-----------Mux Load Source---------//
   	 logic [`RegBus] lwsrc_result;
+
+	//-----------Performance Counter-----//
+	
+	logic [`CycleCountBus]	cycle_count;
+	logic [`InstCountBus]   inst_count;
    
  
   	   IM inst_memory(.clk(clk), 
@@ -320,7 +325,14 @@ module CPU(clk,
 			.S(wb_lwsrc),
 			.I0(wb_movsrc_result),
 			.I1(wb_DM_out));
-		               
+	 
+	 performance pmu(.clk(clk),
+			 .rst(rst),
+			 .stall(stall_pc),
+			 .flush(branch_true),
+			 .if_inst(IM_out),
+			 .cycle_count(cycle_count),
+			 .inst_count(inst_count));		               
 	
 endmodule
 

@@ -66,6 +66,7 @@ add wave -noupdate /top_tb/cpu/regfile1/din
 add wave -noupdate /top_tb/cpu/regfile1/dout1
 add wave -noupdate /top_tb/cpu/regfile1/dout2
 add wave -noupdate /top_tb/cpu/regfile1/swdout
+add wave -noupdate /top_tb/cpu/regfile1/rw_reg
 add wave -noupdate -divider {Forwarding Unit}
 add wave -noupdate /top_tb/cpu/forward_unit/id_reg1_addr
 add wave -noupdate /top_tb/cpu/forward_unit/id_reg2_addr
@@ -155,12 +156,18 @@ add wave -noupdate /top_tb/cpu/memory_to_write/wb_lwsrc
 add wave -noupdate /top_tb/cpu/memory_to_write/wb_movsrc_result
 add wave -noupdate -divider {Mux Load Source}
 add wave -noupdate /top_tb/cpu/mux_lwsrc1/S
-add wave -noupdate /top_tb/cpu/mux_lwsrc1/I0
+add wave -noupdate -radix decimal /top_tb/cpu/mux_lwsrc1/I0
 add wave -noupdate /top_tb/cpu/mux_lwsrc1/I1
 add wave -noupdate /top_tb/cpu/mux_lwsrc1/Y
-add wave -noupdate -childformat {{{/top_tb/cpu/regfile1/rw_reg[31]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[30]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[29]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[28]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[27]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[26]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[25]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[24]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[23]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[22]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[21]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[20]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[19]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[18]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[17]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[16]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[15]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[14]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[13]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[12]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[11]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[10]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[9]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[8]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[7]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[6]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[5]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[4]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[3]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[2]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[1]} -radix decimal} {{/top_tb/cpu/regfile1/rw_reg[0]} -radix decimal}} -expand -subitemconfig {{/top_tb/cpu/regfile1/rw_reg[31]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[30]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[29]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[28]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[27]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[26]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[25]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[24]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[23]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[22]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[21]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[20]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[19]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[18]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[17]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[16]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[15]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[14]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[13]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[12]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[11]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[10]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[9]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[8]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[7]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[6]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[5]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[4]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[3]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[2]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[1]} {-height 17 -radix decimal} {/top_tb/cpu/regfile1/rw_reg[0]} {-height 17 -radix decimal}} /top_tb/cpu/regfile1/rw_reg
+add wave -noupdate -divider {Performance Unit}
+add wave -noupdate /top_tb/cpu/pmu/clk
+add wave -noupdate /top_tb/cpu/pmu/rst
+add wave -noupdate /top_tb/cpu/pmu/stall
+add wave -noupdate /top_tb/cpu/pmu/flush
+add wave -noupdate -radix decimal /top_tb/cpu/pmu/cycle_count
+add wave -noupdate -radix decimal /top_tb/cpu/pmu/inst_count
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 7} {51920 ps} 0}
+WaveRestoreCursors {{Cursor 7} {964520 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 353
 configure wave -valuecolwidth 317
@@ -176,4 +183,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 ps} {193580 ps}
+WaveRestoreZoom {348530 ps} {542110 ps}

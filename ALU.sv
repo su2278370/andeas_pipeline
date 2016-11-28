@@ -32,19 +32,12 @@ always_comb begin
           `AluCtrlAdd :begin //ADD
             alu_result = src1 + src2;
             branch_true = `BranchFalse;
-            //???
-            if((alu_result[31] == 1'b1 && src1[31] == 1'b0 && src2[31] == 1'b0) || (alu_result[31] == 1'b0 && src1[31] == 1'b1 && src2[31] == 1'b1))
-              overflow = 1'b1;
-            else
-              overflow = 1'b0;
+
           end
           `AluCtrlSub :begin //SUB
             alu_result = src1 - src2;
             branch_true = `BranchFalse;
-            if((alu_result[31] == 1'b1 && src1[31] == 1'b0 && src2[31] == 1'b1) || (alu_result[31] == 1'b0 && src1[31] == 1'b1 && src2[31] == 1'b0))
-              overflow = 1'b1;
-            else
-              overflow = 1'b0;
+            
           end
           `AluCtrlAnd :begin //AND
             alu_result = src1 & src2;
@@ -131,6 +124,44 @@ always_comb begin
             alu_result = 1'b0;
             overflow = 1'b0;
           end
+	  `AluCtrlSva :begin
+	     temp = src1 + src2;
+             branch_true = `BranchFalse;
+            
+             if((temp[31] == 1'b1 && src1[31] == 1'b0 && src2[31] == 1'b0) || (temp[31] == 1'b0 && src1[31] == 1'b1 && src2[31] == 1'b1))begin
+		alu_result = `OverFlowTrue;
+                overflow = 1'b1;
+	     end
+             else begin
+		alu_result = `OverFlowFalse;
+               	overflow = 1'b0;
+	     end
+	  end
+	  `AluCtrlSvs:begin
+	     temp = src1 - src2;
+             branch_true = `BranchFalse;
+		
+             if((temp[31] == 1'b1 && src1[31] == 1'b0 && src2[31] == 1'b1) || (temp[31] == 1'b0 && src1[31] == 1'b1 && src2[31] == 1'b0))begin
+		alu_result = `OverFlowTrue;
+                overflow = 1'b1;
+             end
+             else begin
+		alu_result = `OverFlowFalse;
+               	overflow = 1'b0;
+	     end
+	  end
+	  `AluCtrlAbs:begin
+		if(src1[31]==1'b1) //negative		
+			alu_result = (~src1) + 1'b1;
+		else //positive
+			alu_result = src1;
+	  end
+	  `AluCtrlJrRet:begin
+		new_addr = src2 >> 2;
+        	branch_true = `BranchTrue;
+	        alu_result = 1'b0;
+            	overflow = 1'b0;
+	  end
           default :begin
             alu_result = 1'b0;
             branch_true = `BranchFalse;

@@ -1,8 +1,8 @@
 //Data size
 `define ImSize 1024
 `define ImAddr 9:0
-`define DmSize 4096
-`define DmAddr 11:0
+`define DmSize 32768
+`define DmAddr 14:0
 
 `define RegBus 31:0
 `define RegAddrBus 4:0
@@ -11,6 +11,9 @@
 
 `define InstBus 31:0
 `define InstAddrBus 31:0
+
+`define CycleCountBus 127:0
+`define InstCountBus  63:0
 
 //Extension
 `define Extension 1:0
@@ -47,23 +50,29 @@
 
 
 //Alu control
-`define AluCtrl 3:0
-`define AluCtrlAdd  4'b0000
-`define AluCtrlSub  4'b0001
-`define AluCtrlAnd  4'b0010
-`define AluCtrlOr   4'b0011
-`define AluCtrlXor  4'b0100
-`define AluCtrlSrli  4'b0101
-`define AluCtrlSlli  4'b0110
-`define AluCtrlRotri  4'b0111
-`define AluCtrlNop   4'b1000
-`define AluCtrlLwSw  4'b1001
-`define AluCtrlLwiSwi  4'b1010
-`define AluCtrlBeq  4'b1011
-`define AluCtrlBne  4'b1100
-`define AluCtrlBeqz 4'b1101
-`define AluCtrlBnez 4'b1110
-`define AluCtrlJump 4'b1111
+`define OverFlowTrue  32'b00000000_00000000_00000000_00000001
+`define OverFlowFalse 32'b00000000_00000000_00000000_00000000
+`define AluCtrl 4:0
+`define AluCtrlAdd  5'b00000
+`define AluCtrlSub  5'b00001
+`define AluCtrlAnd  5'b00010
+`define AluCtrlOr   5'b00011
+`define AluCtrlXor  5'b00100
+`define AluCtrlSrli  5'b00101
+`define AluCtrlSlli  5'b00110
+`define AluCtrlRotri  5'b00111
+`define AluCtrlNop   5'b01000
+`define AluCtrlLwSw  5'b01001
+`define AluCtrlLwiSwi  5'b01010
+`define AluCtrlBeq  5'b01011
+`define AluCtrlBne  5'b01100
+`define AluCtrlBeqz 5'b01101
+`define AluCtrlBnez 5'b01110
+`define AluCtrlJump 5'b01111
+`define AluCtrlSva  5'b10000
+`define AluCtrlSvs  5'b10001
+`define AluCtrlAbs  5'b10010	
+`define AluCtrlJrRet 5'b10011
 
 //Sub Opcode
 `define NOP_SRLI 5'b01001
@@ -74,6 +83,8 @@
 `define XOR 5'b00011            
 `define SLLI 5'b01000
 `define ROTRI 5'b01011
+`define SVA 5'b11000
+`define SVS 5'b11001
 `define ADDI 6'b101000
 `define ORI  6'b101100
 `define XORI 6'b101011
@@ -81,10 +92,14 @@
 `define LWI 6'b000010
 `define SWI 6'b001010
 `define JUMP 6'b100100
+`define ABS  6'b100001
 `define BEQ 1'b0
 `define BNE 1'b1
 `define BEQZ 4'b0010
 `define BNEZ 4'b0011          
 `define LW 8'b00000010
 `define SW 8'b00001010
+`define JR  1'b0
+`define RET 1'b1
+
 

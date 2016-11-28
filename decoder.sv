@@ -66,6 +66,7 @@ module decoder(clk,
    
    logic [5:0] 		      opcode;
    logic 		            sub_opcode;
+   logic               sub_opcode_1;
    logic [3:0] 		      sub_opcode_4;
    logic [4:0] 		      sub_opcode_5;
    logic [7:0] 		      sub_opcode_8;
@@ -86,8 +87,9 @@ module decoder(clk,
    
    always_comb begin
       
-      opcode       = inst_i[30:25];
-      sub_opcode   = inst_i[14];
+      opcode        = inst_i[30:25];
+      sub_opcode    = inst_i[14];
+      sub_opcode_1  = inst_i[5];
       sub_opcode_4 = inst_i[19:16];
       sub_opcode_5 = inst_i[4:0];
       sub_opcode_8 = inst_i[7:0];
@@ -259,6 +261,25 @@ module decoder(clk,
                 
                 
              end
+	    	`SVA:begin
+			reg_write   = `WriteEnable;
+			alu_ctrl = `AluCtrlSva;
+	                lwsrc = `LwAluSrc;
+			aluSrc2 = `RegSrc;
+			movsrc = `MvAluSrc;
+			reg1_read    = `ReadEnable;
+                	reg2_read    = `ReadEnable;		
+
+		end
+		`SVS:begin
+			reg_write   = `WriteEnable;
+			alu_ctrl = `AluCtrlSvs;
+	                lwsrc = `LwAluSrc;
+			aluSrc2 = `RegSrc;
+			movsrc = `MvAluSrc;
+			reg1_read    = `ReadEnable;
+                	reg2_read    = `ReadEnable;
+		end
              default:begin
                reg_write   = `WriteDisable;
 				alu_ctrl = `AluCtrlNop;  
@@ -549,7 +570,7 @@ module decoder(clk,
 				DM_read      = `ReadDisable; 
 				DM_write     = `WriteDisable; 
 				alu_ctrl = `AluCtrlBnez;
-                lwsrc = `LwAluSrc;
+		                lwsrc = `LwAluSrc;
 				aluSrc2 = `RegSrc;
 				movsrc = `MvAluSrc;   
 				reg1_read    = `ReadEnable;
@@ -564,7 +585,7 @@ module decoder(clk,
              end
              default:begin
 				alu_ctrl = `AluCtrlNop;  
-                lwsrc = `LwAluSrc;
+                		lwsrc = `LwAluSrc;
 				aluSrc2 = `RegSrc;
 				movsrc = `MvAluSrc;     
 				reg1_read    = `ReadDisable;
@@ -577,28 +598,91 @@ module decoder(clk,
              end
            endcase    
         end
+
+	`ABS:begin
+		reg1_addr_o  = inst_i[19:15];
+		//reg2_addr_o  = inst_i[14:10];
+		write_addr_o = inst_i[24:20];
+		reg_write    = `WriteEnable;
+		DM_read      = `ReadDisable; 
+		DM_write     = `WriteDisable; 
+		alu_ctrl = `AluCtrlAbs;
+	        lwsrc = `LwAluSrc;
+		aluSrc2 = `RegSrc;
+		movsrc = `MvAluSrc;   
+		reg1_read    = `ReadEnable;
+		reg2_read    = `ReadDisable;
+		sw_read = `ReadDisable;
+		
+	end
         
         `JUMP:begin
 		   //reg1_addr_o  = inst_i[19:15];
-	       //reg2_addr_o  = inst_i[14:10];
+  	           //reg2_addr_o  = inst_i[14:10];
 		   //write_addr_o = inst_i[24:20];
 		   reg_write    = `WriteDisable;
 		   DM_read      = `ReadDisable; 
 		   DM_write     = `WriteDisable; 
 		   alu_ctrl = `AluCtrlJump;
-           lwsrc = `LwAluSrc;
+           	   lwsrc = `LwAluSrc;
 		   aluSrc2 = `ImmSrc;
 		   movsrc = `MvAluSrc;   
 		   reg1_read    = `ReadDisable;
 		   reg2_read    = `ReadDisable;
 		   sw_read = `ReadDisable;	
 		   branch_addr = {{9{inst_i[23]}} ,twentythreeSE[22:0]};
-           //extension = 2'b00;        
-           //src_din = 1'b0;
+           	  //extension = 2'b00;        
+                  //src_din = 1'b0;
            
            
            
         end
+
+	6'b100101:begin
+	
+		case(sub_opcode_1)
+
+		`JR:begin
+			   //reg1_addr_o  = inst_i[19:15];
+	  	           reg2_addr_o  = inst_i[14:10];
+			   //write_addr_o = inst_i[24:20];
+			   reg_write    = `WriteDisable;
+			   DM_read      = `ReadDisable; 
+			   DM_write     = `WriteDisable; 
+			   alu_ctrl = `AluCtrlJrRet;
+		   	   lwsrc = `LwAluSrc;
+			   aluSrc2 = `RegSrc;
+			   movsrc = `MvAluSrc;   
+			   reg1_read    = `ReadDisable;
+			   reg2_read    = `ReadEnable;
+			   sw_read = `ReadDisable;	
+			   //branch_addr = {{9{inst_i[23]}} ,twentythreeSE[22:0]};
+		   	  //extension = 2'b00;        
+		          //src_din = 1'b0;
+		end
+
+		`RET:begin
+			   //reg1_addr_o  = inst_i[19:15];
+	  	           reg2_addr_o  = inst_i[14:10];
+			   //write_addr_o = inst_i[24:20];
+			   reg_write    = `WriteDisable;
+			   DM_read      = `ReadDisable; 
+			   DM_write     = `WriteDisable; 
+			   alu_ctrl = `AluCtrlJrRet;
+		   	   lwsrc = `LwAluSrc;
+			   aluSrc2 = `RegSrc;
+			   movsrc = `MvAluSrc;   
+			   reg1_read    = `ReadDisable;
+			   reg2_read    = `ReadEnable;
+			   sw_read = `ReadDisable;	
+			   //branch_addr = {{9{inst_i[23]}} ,twentythreeSE[22:0]};
+		     	  //extension = 2'b00;        
+		          //src_din = 1'b0;
+		end
+
+		endcase
+
+	end
         
         default:begin
            alu_ctrl = `AluCtrlNop;  
