@@ -18,7 +18,8 @@ module IM(clk,
   
   integer i;
   
-  always_ff@(posedge clk, posedge rst)begin
+  always_ff@(posedge clk)begin
+
     if(rst==`RstEnable)begin
       for(i=0;i<`ImSize;i=i+1)begin
         
@@ -35,8 +36,7 @@ module IM(clk,
       IM_out = `ZeroWord;
       
     end
-    else begin
-      if(IM_read==`ReadEnable)
+    else if(IM_read==`ReadEnable)begin
         IM_out = mem_data[IM_addr];  
     end   
     

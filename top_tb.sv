@@ -4,7 +4,7 @@
 
 //`define syn
 //`define FSDB
-`define prog1
+`define prog0
 
 `ifdef syn
   `include "tsmc13_neg.v"

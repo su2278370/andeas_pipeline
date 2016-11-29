@@ -2,10 +2,10 @@
 `include "port_define.sv"
 
 module DM(clk, 
-	         rst,
+	  rst,
           DM_read, 
           DM_write, 
-	        DM_addr, 
+	  DM_addr, 
           DM_in, 
           DM_out
 );
@@ -13,7 +13,6 @@ module DM(clk,
   input clk;
   input rst; 
 
-  //From interface
   input DM_read; 
   input DM_write;
   input [`RegBus]DM_in;
@@ -25,22 +24,18 @@ module DM(clk,
   
   integer i;
   
-  always_ff@(posedge clk, posedge)begin
+  always_ff@(posedge clk)begin
     if(rst==`RstEnable)begin
       for(i=0;i<`DmSize;i=i+1)begin
         
         mem_data[i] <= `ZeroWord;
       end
-            
+        
     end
     else begin
-      //if(DM_read==`ReadEnable)
-        //DM_out <= mem_data[DM_addr];
-
+      
       if(DM_write==`WriteEnable)
         mem_data[DM_addr] <= DM_in;
-     
-      
 
     end
       
@@ -52,23 +47,15 @@ module DM(clk,
       
       DM_out = `ZeroWord;
       
-    end
-    /*if(rst==`RstEnable)begin
-      for(i=0;i<`DmSize;i=i+1)begin
-        
-        mem_data[i] = `ZeroWord;
-      end
-      DM_out = `ZeroWord;
-      
-    end
-    else begin*/
-      if(DM_read==`ReadEnable)
+    end 
+    else if(DM_read==`ReadEnable) begin
+
         DM_out = mem_data[DM_addr];
 
-      //else if(DM_write==`WriteEnable)
-        //mem_data[DM_addr] = DM_in;  
+    end
+    else
+	DM_out = `ZeroWord;	
 
-    //end
   end
   
 endmodule

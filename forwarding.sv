@@ -24,9 +24,9 @@ module forwarding(
 	   mem_alu_data,
            mem_data,
 	   mem_mov_data,
-           //wb_write_addr,   
-	   //wb_reg_write,
-	   //wb_data,
+           wb_write_addr,   
+	   wb_reg_write,
+	   wb_data,
 	   forward1_data,
            forward2_data,
 	   forwardsw_data,
@@ -62,9 +62,9 @@ module forwarding(
 	input [`RegBus] mem_data;
 	input [`RegBus] mem_mov_data;
 
-	//input [`RegAddrBus] wb_write_addr;
-	//input wb_reg_write;
-	//input [`RegBus] wb_data;
+	input [`RegAddrBus] wb_write_addr;
+	input wb_reg_write;
+	input [`RegBus] wb_data;
 	
 	output logic [`RegBus] forward1_data;
 	output logic [`RegBus] forward2_data;
@@ -93,7 +93,7 @@ module forwarding(
 			stall_if_id = 1'b1;
 		end
 		else if(opcode==6'b000010)begin
-		  stall_pc = 1'b1;
+		  	stall_pc = 1'b1;
 			stall_if_id = 1'b1;
 		end
 		else begin
@@ -119,8 +119,8 @@ module forwarding(
 					forward1_data = mem_mov_data; 
 				else
 					forward1_data = mem_alu_data;
-			//else if(id_reg1_addr == wb_write_addr && wb_reg_write == `WriteEnable) 
-				//forward1_data = wb_data;
+			else if(id_reg1_addr == wb_write_addr && wb_reg_write == `WriteEnable) 
+				forward1_data = wb_data;
 			else
 				forward1_data = id_reg1_o;
 		end
@@ -144,8 +144,8 @@ module forwarding(
 					forward2_data = mem_mov_data;
 				else
 					forward2_data = mem_alu_data;
-			//else if(id_reg2_addr == wb_write_addr && wb_reg_write == `WriteEnable) 
-				//forward2_data = wb_data;
+			else if(id_reg2_addr == wb_write_addr && wb_reg_write == `WriteEnable) 
+				forward2_data = wb_data;
 			else
 				forward2_data = id_reg2_o;		
 		end
@@ -170,8 +170,8 @@ module forwarding(
 					forwardsw_data = mem_mov_data;
 				else
 					forwardsw_data = mem_alu_data;
-			//else if(id_sw_addr == wb_write_addr && wb_reg_write == `WriteEnable) 
-				//forward1_data = wb_data;
+			else if(id_sw_addr == wb_write_addr && wb_reg_write == `WriteEnable) 
+				forwardsw_data = wb_data;
 			else
 				forwardsw_data = id_sw_o;
 		end

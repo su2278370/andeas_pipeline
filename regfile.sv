@@ -31,12 +31,16 @@ module regfile(clk,
   
   integer i;
   
-  /*always_ff@(posedge clk, posedge rst)begin
+  always_ff@(posedge clk)begin //write
     
     if(rst==`RstEnable)begin
+
         for(i=0;i<`RegNum;i=i+1)begin
+
           rw_reg[i] <= `ZeroWord;
+
         end
+
     end else begin
         
         if(write==`WriteEnable)
@@ -45,51 +49,32 @@ module regfile(clk,
             
     end
     
-  end*/
-
-  always_comb begin 
-
-    if(rst==`RstEnable)begin
-            for(i=0;i<`RegNum;i=i+1)begin
-                 rw_reg[i] = `ZeroWord;
-            end
-        end else begin
-        
-            if(write==`WriteEnable)
-            
-                    rw_reg[waddr1] = din;
-            
-        end
-
   end
-
-  
-  always_comb begin
+ 
+  always_comb begin //sw read
     
     if(rst==`RstEnable)begin
         swdout = `ZeroWord;
     end else if(swread==`ReadEnable) begin
         swdout = rw_reg[swaddr];
-    end else 
-            swdout = `ZeroWord;
+    end else  
+        swdout = `ZeroWord;
     
           
-    end
+  end
   
-  always_comb begin
+  always_comb begin //r1 read
     
     if(rst==`RstEnable)begin
         dout1 = `ZeroWord;
     end else if(read1==`ReadEnable) begin
         dout1 = rw_reg[raddr1];
     end else
-        dout1 = `ZeroWord;
-    
-    
+        dout1 = `ZeroWord; 
     
   end
   
-  always_comb begin
+  always_comb begin //r2 read
     
     if(rst==`RstEnable)begin
         dout2 = `ZeroWord;
@@ -97,8 +82,7 @@ module regfile(clk,
         dout2 = rw_reg[raddr2];
     end else
         dout2 = `ZeroWord;
-      
-    
+
   end
   
 endmodule
