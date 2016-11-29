@@ -4,8 +4,8 @@
 
 module if_id(clk,
              rst,
-	     flush,
-	     stall,
+         flush,
+         stall,
              if_pc,
              if_inst,
              id_pc,
@@ -23,11 +23,20 @@ module if_id(clk,
   output logic [`RegBus]id_pc;          
   output logic [`RegBus]id_inst;
   
-  always@(posedge clk, posedge rst)begin
-    if(rst==`RstEnable || flush==`FlushEnable || stall==`StallEnable)begin
+  always_ff@(posedge clk)begin
+    if(rst==`RstEnable)begin
       id_pc <= `ZeroWord;
       id_inst <= `ZeroWord;
-    end else begin
+    end
+    else if(flush==`FlushEnable)begin
+      id_pc <= `ZeroWord;
+      id_inst <= `ZeroWord;
+    end
+    else if(stall==`StallEnable)begin
+      id_pc <= `ZeroWord;
+      id_inst <= `ZeroWord;
+    end
+    else begin
       id_pc <= if_pc;
       id_inst <= if_inst;
     end

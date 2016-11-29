@@ -4,7 +4,8 @@
 `define DmSize 32768
 `define DmAddr 14:0
 
-`define RegBus 31:0
+`define TempBus 63:0
+`define RegBus  31:0
 `define RegAddrBus 4:0
 `define ZeroRegAddr 5'b00000
 `define RegNum 32
@@ -71,7 +72,7 @@
 `define AluCtrlJump 5'b01111
 `define AluCtrlSva  5'b10000
 `define AluCtrlSvs  5'b10001
-`define AluCtrlAbs  5'b10010	
+`define AluCtrlAbs  5'b10010    
 `define AluCtrlJrRet 5'b10011
 
 //Sub Opcode

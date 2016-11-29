@@ -25,30 +25,35 @@ module DM(clk,
   
   integer i;
   
-  /*always_ff@(posedge clk, posedge rst)begin
+  always_ff@(posedge clk, posedge)begin
     if(rst==`RstEnable)begin
       for(i=0;i<`DmSize;i=i+1)begin
         
         mem_data[i] <= `ZeroWord;
       end
-      DM_out <= `ZeroWord;
-      
+            
     end
     else begin
-      if(DM_read==`ReadEnable)
-        DM_out <= mem_data[DM_addr];
+      //if(DM_read==`ReadEnable)
+        //DM_out <= mem_data[DM_addr];
 
-      else if(DM_write==`WriteEnable)
+      if(DM_write==`WriteEnable)
         mem_data[DM_addr] <= DM_in;
      
       
 
     end
       
-  end*/
+  end
 
   always_comb begin
+
     if(rst==`RstEnable)begin
+      
+      DM_out = `ZeroWord;
+      
+    end
+    /*if(rst==`RstEnable)begin
       for(i=0;i<`DmSize;i=i+1)begin
         
         mem_data[i] = `ZeroWord;
@@ -56,14 +61,14 @@ module DM(clk,
       DM_out = `ZeroWord;
       
     end
-    else begin
+    else begin*/
       if(DM_read==`ReadEnable)
         DM_out = mem_data[DM_addr];
 
-      else if(DM_write==`WriteEnable)
-        mem_data[DM_addr] = DM_in;  
+      //else if(DM_write==`WriteEnable)
+        //mem_data[DM_addr] = DM_in;  
 
-    end
+    //end
   end
   
 endmodule

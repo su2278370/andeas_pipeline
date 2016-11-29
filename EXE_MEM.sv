@@ -4,7 +4,7 @@
 module exe_mem(clk,
                rst,
                exe_sw_o,
-  	       exe_write_o,
+           exe_write_o,
   exe_lwsrc,
   exe_movsrc,
   exe_write_addr_o,
@@ -34,7 +34,7 @@ module exe_mem(clk,
 
   input [`RegBus] exe_sw_o;
   input [`RegBus] exe_write_o;
-  input  	  exe_lwsrc;
+  input       exe_lwsrc;
   input           exe_movsrc;
   input  [`RegAddrBus]exe_write_addr_o;
   input           exe_reg_write;
@@ -44,7 +44,7 @@ module exe_mem(clk,
 
   
   //Interface to Interface
-  output logic  	  mem_lwsrc;
+  output logic        mem_lwsrc;
   
   //Interface to mux
   output logic           mem_movsrc;
@@ -60,12 +60,12 @@ module exe_mem(clk,
   output logic [`RegBus] mem_alu_result; 
 
   //Alu to Pc
-  //input logic	exe_overflow	          
-  //input logic	exe_branch_true
-  //input logic	[`InstAddrBus] exe_nwe_addr;
+  //input logic exe_overflow              
+  //input logic exe_branch_true
+  //input logic [`InstAddrBus] exe_nwe_addr;
 
   
-  always@(posedge clk, posedge rst)begin
+  always_ff@(posedge clk)begin
     if(rst==`RstEnable)begin
       mem_sw_o <= `ZeroWord;
       mem_write_o <= `ZeroWord;

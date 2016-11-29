@@ -2,6 +2,8 @@
 `include "IM.sv"
 `include "DM.sv"
 
+//`define syn
+//`define FSDB
 `define prog1
 
 `ifdef syn
@@ -72,7 +74,7 @@ always #(`PERIOD/2) clk = ~clk;
   initial begin
           clk = 0;
           rst = 0;
-    fin = 0;
+   	  fin = 0;
           #1 rst = 1;
           #(`PERIOD) rst = 0;
           $readmemb("./prog0/IM_data.dat",IM1.mem_data);
@@ -85,7 +87,7 @@ always #(`PERIOD/2) clk = ~clk;
   initial begin
           clk = 0;
           rst = 0;
-    fin = 0;
+    	  fin = 0;
           #1 rst = 1;
           #(`PERIOD) rst = 0;
           $readmemb("./prog1/IM_data.dat",IM1.mem_data);
@@ -98,7 +100,7 @@ always #(`PERIOD/2) clk = ~clk;
   initial begin
           clk = 0;
           rst = 0;
-    fin = 0;
+    	  fin = 0;
           #1 rst = 1;
           #(`PERIOD) rst = 0;
           $readmemb("./prog2/IM_data.dat",IM1.mem_data);
@@ -138,6 +140,11 @@ always #(`PERIOD/2) clk = ~clk;
         $display("Instruction Count = %d", ins_cnt);
         $display("-----------------------FINISH------------------------\n");
         $display("-----------------------------------------------------\n");
+	`ifdef syn
+    	//for( i=0;i<32;i=i+1 ) $display( "register[%d]=%d",i,TOP1.regfile1.(\rw_reg_reg[i]));
+    	`else
+    	for( i=0;i<32;i=i+1 ) $display( "register[%d]=%d",i,TOP1.regfile1.rw_reg[i]);
+    	`endif
       end
       #(`PERIOD/2); $finish;
   end
@@ -149,8 +156,8 @@ always #(`PERIOD/2) clk = ~clk;
   
   initial begin
   `ifdef FSDB
-    $fsdbDumpfile("top.fsdb");
-    $fsdbDumpvars;
+    $dumpfile("top.fsdb");
+    $dumpvars;
   `elsif VCD
     $dumpfile("top.vcd");
     $dumpvars;
@@ -158,13 +165,22 @@ always #(`PERIOD/2) clk = ~clk;
   end
   
   initial begin
+
+
+
     #(`PERIOD * `End_CYCLE);
     $display("-----------------------------------------------------\n");
     $display("Error!!! Somethings' wrong with your code ...!\n");
     $display("Perhaps you can adjust the bigger value of End_CYCLE and then run the simulation again!");
     $display("-------------------------FAIL------------------------\n");
     $display("-----------------------------------------------------\n");
+    `ifdef syn
+    //for( i=0;i<32;i=i+1 ) $display( "register[%d]=%d",i,TOP1.regfile1.(\rw_reg_reg[i]));
+    `else
+    for( i=0;i<32;i=i+1 ) $display( "register[%d]=%d",i,TOP1.regfile1.rw_reg[i]);
+    `endif
     $finish;
-end
+  
+  end
   
 endmodule

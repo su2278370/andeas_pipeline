@@ -3,7 +3,7 @@
 
 module pc(rst, 
           clk, 
-	  stall,
+      stall,
           branch_true,
           new_addr, 
           pc_output
@@ -17,16 +17,16 @@ module pc(rst,
   
   output logic [`InstAddrBus] pc_output;
   
-  always_ff@(posedge clk, posedge rst)begin
+  always_ff@(posedge clk)begin
     if(rst==`RstEnable)begin
 
-      	pc_output <= `ZeroWord;
-	   
+        pc_output <= `ZeroWord;
+       
     end
     else if(stall==`StallEnable)begin
 
-	pc_output <= pc_output;
-	
+    pc_output <= pc_output;
+    
     end
     else begin
 

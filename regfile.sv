@@ -49,17 +49,17 @@ module regfile(clk,
 
   always_comb begin 
 
-	if(rst==`RstEnable)begin
-        	for(i=0;i<`RegNum;i=i+1)begin
-         		 rw_reg[i] <= `ZeroWord;
-        	end
-    	end else begin
+    if(rst==`RstEnable)begin
+            for(i=0;i<`RegNum;i=i+1)begin
+                 rw_reg[i] = `ZeroWord;
+            end
+        end else begin
         
-        	if(write==`WriteEnable)
+            if(write==`WriteEnable)
             
-            		rw_reg[waddr1] <= din;
+                    rw_reg[waddr1] = din;
             
-    	end
+        end
 
   end
 
@@ -71,10 +71,10 @@ module regfile(clk,
     end else if(swread==`ReadEnable) begin
         swdout = rw_reg[swaddr];
     end else 
-		    swdout = `ZeroWord;
-	
-		  
-	end
+            swdout = `ZeroWord;
+    
+          
+    end
   
   always_comb begin
     
@@ -83,9 +83,9 @@ module regfile(clk,
     end else if(read1==`ReadEnable) begin
         dout1 = rw_reg[raddr1];
     end else
-		dout1 = `ZeroWord;
-	
-	
+        dout1 = `ZeroWord;
+    
+    
     
   end
   
@@ -96,8 +96,8 @@ module regfile(clk,
     end else if(read2==`ReadEnable) begin
         dout2 = rw_reg[raddr2];
     end else
-		dout2 = `ZeroWord;
-	  
+        dout2 = `ZeroWord;
+      
     
   end
   

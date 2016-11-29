@@ -2,11 +2,10 @@
 `include "port_define.sv"
 
 module IM(clk, 
-	  rst,
+          rst,
           IM_read, 
           IM_addr, 
-          IM_out,
- );
+          IM_out);
   
   input clk;
   input rst; 
@@ -19,37 +18,29 @@ module IM(clk,
   
   integer i;
   
-  /*always_ff@(posedge clk, posedge rst)begin
+  always_ff@(posedge clk, posedge rst)begin
     if(rst==`RstEnable)begin
       for(i=0;i<`ImSize;i=i+1)begin
         
         mem_data[i] <= `ZeroWord;
+
       end
-      IM_out <= `ZeroWord;
-      
-    end
-    else begin
-      if(IM_read==`ReadEnable)
-      	IM_out <= mem_data[IM_addr];  
     end
 
-  end*/
+  end
 
   always_comb begin
     if(rst==`RstEnable)begin
-      for(i=0;i<`ImSize;i=i+1)begin
-        
-        mem_data[i] = `ZeroWord;
-      end
+      
       IM_out = `ZeroWord;
       
     end
     else begin
       if(IM_read==`ReadEnable)
-      	IM_out = mem_data[IM_addr];  
+        IM_out = mem_data[IM_addr];  
     end   
-	
+    
   end
-  
+
 endmodule
           
