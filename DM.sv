@@ -5,7 +5,7 @@ module DM(clk,
 	  rst,
           DM_read, 
           DM_write, 
-	  DM_addr, 
+	  DM_address, 
           DM_in, 
           DM_out
 );
@@ -16,7 +16,7 @@ module DM(clk,
   input DM_read; 
   input DM_write;
   input [`RegBus]DM_in;
-  input [`DmAddr]DM_addr;
+  input [`DmAddr]DM_address;
   
   output logic [`RegBus]DM_out;
   
@@ -35,7 +35,7 @@ module DM(clk,
     else begin
       
       if(DM_write==`WriteEnable)
-        mem_data[DM_addr] <= DM_in;
+        mem_data[DM_address] <= DM_in;
 
     end
       
@@ -50,7 +50,7 @@ module DM(clk,
     end 
     else if(DM_read==`ReadEnable) begin
 
-        DM_out = mem_data[DM_addr];
+        DM_out = mem_data[DM_address];
 
     end
     else

@@ -4,15 +4,15 @@
 module IM(clk, 
           rst,
           IM_read, 
-          IM_addr, 
-          IM_out);
+          IM_address, 
+          instruction);
   
   input clk;
   input rst; 
   input IM_read; 
-  input [`ImAddr]IM_addr;
+  input [`ImAddr]IM_address;
   
-  output logic [`RegBus]IM_out;
+  output logic [`RegBus]instruction;
   
   logic [`RegBus]mem_data[`ImSize-1:0];
   
@@ -33,11 +33,11 @@ module IM(clk,
   always_comb begin
     if(rst==`RstEnable)begin
       
-      IM_out = `ZeroWord;
+      instruction = `ZeroWord;
       
     end
     else if(IM_read==`ReadEnable)begin
-        IM_out = mem_data[IM_addr];  
+        instruction = mem_data[IM_address];  
     end   
     
   end

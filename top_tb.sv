@@ -4,7 +4,7 @@
 
 //`define syn
 //`define FSDB
-`define prog0
+//`define prog3
 
 `ifdef syn
   `include "tsmc13_neg.v"
@@ -39,30 +39,33 @@ module top_tb;
   logic fin;
     
   top TOP1(.clk(clk),
-	  .rst(rst),
-	  .mem_DM_read(mem_DM_read), 
-          .mem_DM_write(mem_DM_write), 
-	  .mem_alu_result(mem_alu_result), 
-          .mem_sw_o(mem_sw_o), 
-          .DM_out(DM_out),
-          .pc_output(pc_output), 
-          .IM_out(IM_out),
-	  .cycle_count(cycle_cnt),
-	  .inst_count(ins_cnt));
+	   .rst(rst),
+	   .alu_overflow(),
+	   .instruction(IM_out),
+	   .IM_read(),
+	   .IM_write(),	
+	   .IM_address(pc_output),
+	   .DM_out(DM_out),
+	   .DM_read(mem_DM_read),
+	   .DM_write(mem_DM_write),
+	   .DM_in(mem_sw_o),
+	   .DM_address(mem_alu_result),
+	   .cycle_cnt(cycle_cnt),
+	   .ins_cnt(ins_cnt));
 
   IM IM1(.clk(clk), 
-	   	 .rst(rst),
-          	 .IM_read(1'b1), 
-          	 .IM_addr(pc_output), 
-          	 .IM_out(IM_out));
+	 .rst(rst),
+         .IM_read(1'b1), 
+         .IM_address(pc_output), 
+         .instruction(IM_out));
 
   DM DM1(.clk(clk), 
-		 .rst(rst),
-		 .DM_read(mem_DM_read), 
-		 .DM_write(mem_DM_write), 
-		 .DM_addr(mem_alu_result), 
-		 .DM_in(mem_sw_o), 
-		 .DM_out(DM_out));
+         .rst(rst),
+	 .DM_read(mem_DM_read), 
+	 .DM_write(mem_DM_write), 
+	 .DM_address(mem_alu_result), 
+	 .DM_in(mem_sw_o), 
+	 .DM_out(DM_out));
 
   
   
@@ -103,7 +106,7 @@ always #(`PERIOD/2) clk = ~clk;
     	  fin = 0;
           #1 rst = 1;
           #(`PERIOD) rst = 0;
-          $readmemb("./prog2/IM_data.dat",IM1.mem_data);
+          $readmemh("./prog2/IM_data.dat",IM1.mem_data);
           $readmemh("./prog2/DM_data.dat",DM1.mem_data);
 
   end
@@ -116,7 +119,7 @@ always #(`PERIOD/2) clk = ~clk;
     fin = 0;
     #1 rst = 1;
     #(`PERIOD) rst = 0;
-    $readmemb("./prog3/IM_data.dat",IM1.mem_data);
+    $readmemh("./prog3/IM_data.dat",IM1.mem_data);
     $readmemh("./prog3/image1.dat",DM1.mem_data,2); // do not modify address here, modify file name only
     $readmemh("./prog3/image2.dat",DM1.mem_data,800); // do not modify address here, modify file name only
     
