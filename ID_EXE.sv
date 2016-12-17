@@ -4,7 +4,7 @@
 
 module id_exe(clk,
               rst,
-          flush,//branch flush
+              flush,//branch flush
               id_pc_o,
               id_branch_addr,
               id_write_addr_o,
@@ -48,12 +48,12 @@ module id_exe(clk,
     input [`RegBus] id_write_o;
     
     input [`AluCtrl]    id_aluctrl;
-  input id_lwsrc;
+    input id_lwsrc;
   
-  input id_movsrc;
-  input id_reg_write;
-  input id_DM_read; 
-  input id_DM_write;
+    input id_movsrc;
+    input id_reg_write;
+    input id_DM_read; 
+    input id_DM_write;
     
     //Interface to Alu
     output logic [`InstAddrBus] exe_pc_o;
@@ -61,17 +61,17 @@ module id_exe(clk,
     output logic [`RegAddrBus] exe_write_addr_o;
     output logic [`RegBus] exe_reg1_o;
     output logic [`RegBus] exe_reg2_o;
-  output logic [`AluCtrl]    exe_aluctrl;
+    output logic [`AluCtrl]    exe_aluctrl;
     
     //Interface tp Interface
     output logic [`RegBus] exe_sw_o;
     output logic [`RegBus] exe_write_o;
-  output logic        exe_lwsrc;
+    output logic        exe_lwsrc;
  
-  output logic        exe_movsrc;
-  output logic exe_reg_write;
-  output logic exe_DM_read; 
-  output logic exe_DM_write;
+    output logic        exe_movsrc;
+    output logic exe_reg_write;
+    output logic exe_DM_read; 
+    output logic exe_DM_write;
     
     always_ff@(posedge clk)begin
         if(rst==`RstEnable)begin

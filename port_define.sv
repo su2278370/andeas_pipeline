@@ -103,4 +103,46 @@
 `define JR  1'b0
 `define RET 1'b1
 
+//DCache
+`define DCacheSize 1024
+`define DLineSize  16
+`define LineWidth  511:0
+`define DIndex  	  11:6
+`define DTag    	  31:12
+`define DOffset 	  6:3
+
+//Cache
+`define CACHESIZE 1024
+`define INDEX 13:4
+`define TAG   31:14
+`define OFFSET 3:0
+`define DATA  31:0
+//`define ABSENT 1'b0
+`define WAITSTATE 'd2
+
+`define STATE_IDLE 4'd0
+`define STATE_READ 4'd1
+`define STATE_READMISS 4'd2
+`define STATE_READSYS 4'd3
+`define STATE_READDATA 4'd4
+`define STATE_WRITE 4'd5
+`define STATE_WRITEHIT 4'd6
+`define STATE_WRITEMISS 4'd7
+`define STATE_WRITESYS 4'd8
+`define STATE_WRITEDATA 4'd9
+
+`define READ 1'b1
+`define WRITE 1'b0
+//`define ADDR 15:0
+//`define ADDRWIDTH 16
+`define ADDR 31:0
+`define ADDRWIDTH 32
+//`define INDEX 9:0
+//`define TAG 15:10
+//`define DATA 31:0
+`define DATAWIDTH 32
+`define PRESENT 1'b1
+`define ABSENT !`PRESENT
+
+
 
