@@ -18,7 +18,6 @@ module ValidRam(
 
 	output logic ValidOut;
 	
-	logic ValidOut;
 	logic [`CACHESIZE-1:0] ValidBits;
 	integer i;
 
@@ -34,6 +33,6 @@ module ValidRam(
 	end
 
 	always_ff @(posedge Clk)
-		validOut <= ValidBits[Address]; //read
+		ValidOut <= ValidBits[Address]; //read
 
 endmodule

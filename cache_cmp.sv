@@ -11,8 +11,6 @@ module Comparator(
 
 	output logic Match;
 
-	logic Match;
-
 	always_comb begin
 
 		if(Tag1 == Tag2)

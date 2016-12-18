@@ -15,7 +15,6 @@ module TagRam(
 
 	output logic [`TAG] TagOut;
 
-	logic [`TAG] TagOut;
 	logic [`TAG] TagRam [`CACHESIZE-1:0];
 
 	always_ff @(negedge Clk)begin //????

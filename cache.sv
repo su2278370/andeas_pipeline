@@ -1,9 +1,16 @@
 `timescale 1ns/10ps
 `include "port_define.sv"
+`include "cache_ctrl.sv"
+`include "cache_mux.sv"
+`include "cache_wait.sv"
+`include "cache_valid.sv"
+`include "cache_data.sv"
+`include "cache_tag.sv"
+`include "cache_cmp.sv"
 
 module cache(
 				PStrobe, 
-				Paddress,
+				PAddress,
 				PData, 
 				PRW, 
 				PReady,
@@ -20,13 +27,13 @@ module cache(
 
 	//CPU <-> Cache
 	input PStrobe;
-	input [`ADDR] PAdress;
-	input [`DATA] PData;
+	input [`ADDR] PAddress;
+	inout [`DATA] PData; //inout!!!
 	input PRW;
 	output PReady;
 
 	//Cache <-> memory
-	input [`DATA] SysData;
+	inout [`DATA] SysData; //inout
 	output logic SysStrobe;
 	output logic [`ADDR] SysAddress;
 	output logic SysRW;
@@ -36,7 +43,6 @@ module cache(
 	logic PDataOE;
 	logic SysDataOE;
 	logic [`DATA] PDataOut;
-	logic [`DATA] PData;
 	logic [`TAG]  TagRamTag;
 	logic Write;
 	logic Valid;
@@ -47,13 +53,13 @@ module cache(
 	logic [`DATA] DataRamDataOut;
 	logic [`DATA] DataRamDataIn;
 
-	always_comb begin
-		PData = PDataOE ? PDataOut :`DATAWIDTH`bz;
-		SysData = SysDataOE ? PData : `DATAWIDTH`bz;
-		SysAddress = PAddress;
-	end
+	//always_comb begin
+	assign	PData = PDataOE ? PDataOut :`DATAWIDTH'bz;
+	assign	SysData = SysDataOE ? PData : `DATAWIDTH'bz;
+	assign	SysAddress = PAddress;
+	//end
 
-	TagRam TagRam(
+	TagRam tagram(
 					.Address (PAddress[`INDEX]),
 					.TagIn (PAddress[`TAG]),
 					.TagOut (TagRamTag[`TAG]),
@@ -61,7 +67,7 @@ module cache(
 					.Clk (Clk)
 	);
 
-	ValidTam ValidRam(
+	ValidRam validram(
 						.Address(PAddress[`INDEX]),
 						.ValidIn (1'b1),
 						.ValidOut (Valid),
@@ -71,7 +77,6 @@ module cache(
 	);
 
 	//Selecting write data source
-	//write allocate ??
 	//If write miss, from memory
 	//else, from cpu 
 	DataMux CacheDataInputMux(
@@ -82,7 +87,6 @@ module cache(
 	);
 
 	//Selecting read data source
-	//read through ??
 	//If read miss, from memory
 	//else, from cache
 	DataMux PDatatMux(
@@ -92,7 +96,7 @@ module cache(
 		.Z (PDataOut)
 	);
 
-	DataRam DataRam(
+	DataRam dataram(
 		.Address (PAddress[`INDEX]),
 		.DataIn (DataRamDataIn),
 		.DataOut (DataRamDataOut),

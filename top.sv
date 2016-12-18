@@ -14,15 +14,16 @@
 `include "MEM_WB.sv"
 `include "mux_lwsrc.sv"
 `include "performance.sv"
+`include "cache.sv"
 
 module top(	clk, 
        		rst,
 		alu_overflow,
-       		DM_read, 
-      		DM_write, 
-       		DM_address, 
-       		DM_in, 
-       		DM_out,
+       		//DM_read, 
+      		//DM_write, 
+       		//DM_address, 
+       		//DM_in, 
+       		//DM_out,
 		IM_read,
 	   	IM_write,	
        		IM_address, 
@@ -35,12 +36,12 @@ module top(	clk,
     input clk;
     input rst;
     input [`RegBus] instruction;
-    input [`RegBus] DM_out;
+    //input [`RegBus] DM_out;
 
-    output  logic DM_read; //DM_read
-    output  logic DM_write; //DM_write
-    output  logic [`RegBus] DM_address; //DM_addr
-    output  logic [`RegBus] DM_in; //DM_in
+    logic DM_read; //DM_read
+    logic DM_write; //DM_write
+    logic [`RegBus] DM_address; //DM_addr
+    //logic [`RegBus] DM_in; //DM_in
     
     output  logic IM_read;
     output  logic IM_write;
@@ -154,7 +155,54 @@ module top(	clk,
      //-----------Mux Load Source---------//
      logic [`RegBus] lwsrc_result;
 
- 
+
+     cache dcache(
+              .Reset     (rst),
+              .Clk       (clk),
+              .PStrobe   (PStrobe),
+              .PAddress  (PAddress),
+              .PData     (PData),
+              .PRW       (PRW),
+              .PReady    (PReady),
+              .SysData   (SysData),
+              .SysStrobe (SysStrobe),
+              .SysAddress(SysAddress),
+              .SysRW     (SysRW));
+
+      
+      logic PStrobe;
+      logic [`RegBus]PAddress;
+      logic PRW;
+
+      logic PReady;
+
+      inout  logic [`RegBus]PData;
+
+      inout [`RegBus]SysData;
+      output SysStrobe;
+      output [`RegBus]SysAddress;
+      output SysRW;
+
+      always_comb begin
+          if(DM_read)begin
+              PRW = 1'b0;
+              PStrobe = 1'b1;
+              PAddress = DM_address;
+          end
+
+          else if(DM_write)begin
+              PRW = 1'b1;
+              PStrobe = 1'b1;
+              PAddress = DM_address;
+          end
+
+          else begin
+              PRW = 1'b0;
+              PStrobe = 1'b0;
+              PAddress = DM_address;
+          end
+
+      end
       
    
      pc program_counter(.clk(clk), 
@@ -235,7 +283,7 @@ module top(	clk,
 				.mem_DM_read(DM_read),
 				.mem_mov_data(mem_write_o),
 				.mem_alu_data(DM_address),
-				.mem_data(DM_out),
+				.mem_data(SysData),
 				.wb_write_addr(wb_write_addr_o),   
 				.wb_reg_write(wb_reg_write),
 				.wb_data(lwsrc_result),
@@ -302,7 +350,7 @@ module top(	clk,
           				.mem_write_o(mem_write_o),
           
           
-          				.mem_sw_o(DM_in),
+          				.mem_sw_o(SysData),
           				.mem_write_addr_o(mem_write_addr_o),
           				.mem_reg_write(mem_reg_write),
           				.mem_DM_read(DM_read), 
@@ -322,7 +370,7 @@ module top(	clk,
           			.mem_write_addr_o(mem_write_addr_o),
           			.mem_reg_write(mem_reg_write),
           			.mem_movsrc_result(movsrc_result),
-          			.mem_DM_out(DM_out),
+          			.mem_DM_out(SysData),
           			.wb_lwsrc(wb_lwsrc),
           			.wb_write_addr_o(wb_write_addr_o),
           			.wb_reg_write(wb_reg_write),

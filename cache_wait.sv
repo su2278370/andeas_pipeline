@@ -19,7 +19,7 @@ module WaitStateCtr(
 		if (Load)
 			Count <= LoadValue;
 		else
-			Count <= Count - 2’b1;
+			Count <= Count - 2'b1;
 	end
 	
 	always_comb begin

@@ -4,7 +4,7 @@
 module Control(
 				PStrobe, 
 				PRW, 	
-				Ready,
+				PReady,
 				Match, 
 				Valid, 
 				Write,
@@ -27,29 +27,39 @@ module Control(
 
 	output logic PReady;
 	output logic Write;
-	output logic CacheDataSelect;
-	output logic PDataSelect;
+	output logic CacheDataSelect; //write selection
+	output logic PDataSelect; //read selection
 	output logic SysDataOE;
 	output logic PDataOE;
 	output logic SysStrobe; 
 	output logic SysRW;
 
 	
-	logic [1:0] WaitStateCtrInput = `WAITSTATES - 2'd1;
+	//logic [1:0] WaitStateCtrInput = `WAITSTATES - 2'd1;
 	logic WaitStateCtrCarry;
 	logic LoadWaitStateCtr;
 
 
 	WaitStateCtr WaitStateCtr(
 		.Load (LoadWaitStateCtr),
-		.LoadValue (WaitStateCtrInput), //WaitStateCtrCarry
+		.LoadValue (`WAITSTATE - 2'd1), //WaitStateCtrCarry
 		.Carry (WaitStateCtrCarry),
 		.Clk (Clk)
 	);
 
-	logic PReadyEnable;
+	logic PReadyEnable; //????
 	logic [3:0] State;
 	logic [3:0] NextState;
+
+
+	/*PReady =;
+	Write =;
+	CacheDataSelect =;
+	PDataSelect =;
+	SysDataOE =;
+	PDataOE =;
+	SysStrobe =; 
+	SysRW =;*/
 	
 
 	always_ff @(posedge Clk)
@@ -57,67 +67,246 @@ module Control(
 	
 	always_comb begin
 
-		Case (State)
+		case (State)
 
 		`STATE_IDLE: begin
-			if (PStrobe && PRW == `READ)
+			if (PStrobe && PRW == `READ)begin
+
+				PReady = 1'b0; //to cpu rd
+
+				Write  = 1'b0; //cache rw 0->read 1->write
+				CacheDataSelect = 1'b0; //cache in 0->sys 1->cpu
+				PDataSelect = 1'b0; //cache out 0->sys 1->cache
+
+				SysDataOE = 1'b0; //to sys
+				PDataOE = 1'b0; //to cpu
+
+				SysStrobe = 1'b0; //request sys
+				SysRW = 1'b0; //request sys rw
+
 				NextState = `STATE_READ;
-			else if (PStrobe && PRW ==` WRITE)
+			end
+			else if (PStrobe && PRW ==` WRITE)begin
+
+				PReady = 1'b0;
+
+				Write  = 1'b0;
+				CacheDataSelect = 1'b0; 
+				PDataSelect = 1'b0; 
+
+				SysDataOE = 1'b0;
+				PDataOE = 1'b0;
+
+				SysStrobe = 1'b0; 
+				SysRW = 1'b0;
+
 				NextState = `STATE_WRITE;
-			else 
-				NextState = `STATE_IDLE;
+			end
+			else begin
+
+			end
 		end
 
 		//Read sate
 		`STATE_READ : begin
-			if (Match && Valid)
+			if (Match && Valid)begin
+
+				PReady = 1'b1;
+
+				Write  = 1'b0;
+				CacheDataSelect = 1'b0; 
+				PDataSelect = 1'b1; 
+
+				SysDataOE = 1'b0;  
+				PDataOE = 1'b1; 
+
+				SysStrobe = 1'b0; 
+				SysRW = 1'b0;
+
 				NextState = `STATE_IDLE;
-			else 
+			end
+			else begin 
+
+				PReady = 1'b0;
+
+				Write  = 1'b0;
+				CacheDataSelect = 1'b0; 
+				PDataSelect = 1'b1; 
+
+				SysDataOE = 1'b0;
+				PDataOE = 1'b0;
+
+				SysStrobe = 1'b0; 
+				SysRW = 1'b0;
+
 				NextState = `STATE_READMISS;
+			end
 		end
-		`STATE_READMISS : begin
-			NextState = `STATE_READSYS; //no read through
+		`STATE_READMISS : begin 
+
+			PReady = 1'b0;
+
+			Write  = 1'b0;
+			CacheDataSelect = 1'b0;
+			PDataSelect = 1'b1; 
+
+			SysDataOE = 1'b0;
+			PDataOE = 1'b0;
+
+			SysStrobe = 1'b1; 
+			SysRW = 1'b0;
+
+			NextState = `STATE_READSYS; 
 		end
 		`STATE_READSYS : begin
-			if(WaitStateCtrCarry) // Wait for main memory sending data from cache
-				NextState = `STATE_READDATA;
-			else 
-				NextState = `STATE_READSYS;
+			if(WaitStateCtrCarry)begin 
+				//if(?????)begin
+
+					PReady = 1'b0;
+
+					Write  = 1'b1; 
+					CacheDataSelect = 1'b0; 
+					PDataSelect = 1'b0;
+
+					SysDataOE = 1'b0;
+					PDataOE = 1'b0;
+
+					SysStrobe = 1'b1; 
+					SysRW = 1'b0;
+
+					NextState = `STATE_READDATA;
+				//end
+				//else begin
+
+
+					//NextState = `STATE_WRITEHIT;
+				//end
+			end
+			else begin 
+
+			end
 		end
 		`STATE_READDATA : begin
-			NextState = `STATE_IDEL;
+
+			PReady = 1'b1;
+
+			Write  = 1'b0;
+			CacheDataSelect = 1'b0;
+			PDataSelect = 1'b1; 
+
+			SysDataOE = 1'b0;
+			PDataOE = 1'b1;
+
+			SysStrobe = 1'b0; 
+			SysRW = 1'b0;
+
+			NextState = `STATE_IDLE;
 		end
 
 		//Write state
 		`STATE_WRITE : begin
-			if (Match && Valid)
+			if (Match && Valid)begin
+
+				PReady = 1'b0;
+
+				Write  = 1'b1;
+				CacheDataSelect = 1'b1;
+				PDataSelect = 1'b0; 
+
+				SysDataOE = 1'b0;
+				PDataOE = 1'b0;
+
+				SysStrobe = 1'b0; 
+				SysRW = 1'b0;
+
 				NextState = `STATE_WRITEHIT;
-			else
-				NextState = `STATE_READMISS; //write allocate
+			end
+			else begin
+
+				PReady = 1'b0;
+
+				Write  = 1'b0;
+				CacheDataSelect = 1'b0;
+				PDataSelect = 1'b0; 
+
+				SysDataOE = 1'b0;
+				PDataOE = 1'b0;
+
+				SysStrobe = 1'b0; 
+				SysRW = 1'b0;
+
+				NextState = `STATE_READMISS; 
+			end
 		end
 		`STATE_WRITEHIT : begin
-			NextState = `STATE_WRITESYS; //write through
+
+			PReady = 1'b0;
+
+			Write  = 1'b1;
+			CacheDataSelect = 1'b1;
+			PDataSelect = 1'b0; 
+
+			SysDataOE = 1'b0;
+			PDataOE = 1'b0;
+
+			SysStrobe = 1'b0; 
+			SysRW = 1'b0;
+
+			NextState = `STATE_WRITESYS; 
 		end
 		`STATE_WRITEMISS : begin
-			NextState = `STATE_WRITESYS; //?????
+
+			NextState = `STATE_WRITESYS; 
 		end
 		`STATE_WRITESYS : begin
-			if (WaitStateCtrCarry) // Wait for cache sending data to memory
+			if (WaitStateCtrCarry)begin 
+
+				PReady = 1'b0;
+
+				Write  = 1'b0;
+				CacheDataSelect = 1'b0;
+				PDataSelect = 1'b0; 
+
+				SysDataOE = 1'b1;
+				PDataOE = 1'b0;
+
+				SysStrobe = 1'b1; 
+				SysRW = 1'b1;
+
 				NextState = `STATE_WRITEDATA;
-			else 
+			end
+			else begin 
+
 				NextState = `STATE_WRITESYS;
+			end
 		end
 
 		`STATE_WRITEDATA : begin
+
+			PReady = 1'b1;
+
+			Write  = 1'b0;
+			CacheDataSelect = 1'b0;
+			PDataSelect = 1'b0; 
+
+			SysDataOE = 1'b0;
+			PDataOE = 1'b0;
+
+			SysStrobe = 1'b0; 
+			SysRW = 1'b0;
+
+
 			NextState = `STATE_IDLE;
 		end
 
 		default:
+
 			NextState = `STATE_IDLE;
 
 		endcase
+	end
 
-		task OutputVec;
+		/*task OutputVec;
 			input [9:0] vector;
 			begin
 			vector =			
@@ -126,6 +315,6 @@ module Control(
 				CacheDataSelect,
 				DataSelect, PDataOE, SysDataOE	};
 			end
-		endtask
+		endtask*/
 
 endmodule
